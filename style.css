@@ -57,9 +57,8 @@ button {
 
 .form-row {
   display: grid;
-  grid-template-columns: 1fr 90px 1fr 90px;
-  gap: 8px;
-  margin-bottom: 10px;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
 }
 
 select, input {
@@ -77,4 +76,26 @@ select, input {
 .field label {
   font-size: 12px;
   opacity: 0.7;
+}
+
+@media (max-width: 600px) {
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  button {
+    width: 100%;
+  }
+
+  .container {
+    padding: 12px;
+  }
+
+  select, input {
+    font-size: 16px; /* hindrer zoom på iPhone */
+  }
+}
+
+body {
+  -webkit-tap-highlight-color: transparent;
 }
