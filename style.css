@@ -74,6 +74,10 @@ button {
   font-size: 12px;
   opacity: 0.6;
 }
+
+.form {
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+}
 /* =========================
    RIDE CARD
 ========================= */
