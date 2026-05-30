@@ -1,6 +1,6 @@
 const lineEl = document.getElementById("line");
 const directionEl = document.getElementById("direction");
-const trainSetEl = document.getElementById("trainSet");
+const carNumberEl = document.getElementById("carNumber");
 const addBtn = document.getElementById("addBtn");
 const listEl = document.getElementById("list");
 
@@ -10,13 +10,17 @@ let rides = JSON.parse(localStorage.getItem("rides")) || [];
 render();
 
 addBtn.addEventListener("click", () => {
-  const ride = {
-    id: crypto.randomUUID(),
-    line: lineEl.value,
-    direction: directionEl.value,
-    trainSet: trainSetEl.value,
-    timestamp: Date.now()
-  };
+  if (!carNumberEl.value) {
+  alert("Skriv inn et vognnummer.");
+  return;
+}
+const ride = {
+  id: crypto.randomUUID(),
+  line: lineEl.value,
+  direction: directionEl.value,
+  carNumber: carNumberEl.value,
+  timestamp: Date.now()
+};
 
   rides.unshift(ride);
   localStorage.setItem("rides", JSON.stringify(rides));
@@ -25,7 +29,7 @@ addBtn.addEventListener("click", () => {
 
   // reset input
   directionEl.value = "";
-  trainSetEl.value = "";
+carNumberEl.value = "";
 });
 
 function render() {
@@ -36,11 +40,11 @@ function render() {
     div.className = "ride";
 
     div.innerHTML = `
-      <strong>Linje ${r.line}</strong><br/>
-      ${r.direction} <br/>
-      ${r.trainSet} <br/>
-      <small>${new Date(r.timestamp).toLocaleString()}</small>
-    `;
+  <strong>Linje ${r.line}</strong><br/>
+  ${r.direction}<br/>
+  Vogn ${r.carNumber}<br/>
+  <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
+`;
 
     listEl.appendChild(div);
   });
