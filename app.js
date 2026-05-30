@@ -3,6 +3,8 @@ import { metroLines } from "./lines.js";
 const lineEl = document.getElementById("line");
 const startStationEl = document.getElementById("startStation");
 const endStationEl = document.getElementById("endStation");
+const startTimeEl = document.getElementById("startTime");
+const endTimeEl = document.getElementById("endTime");
 const directionEl = document.getElementById("direction");
 const carNumberEl = document.getElementById("carNumber");
 const addBtn = document.getElementById("addBtn");
@@ -30,6 +32,8 @@ const ride = {
   startStation: startStationEl.value,
   endStation: endStationEl.value,
   carNumber: carNumberEl.value,
+  startTime: startTimeEl.value,
+  endTime: endTimeEl.value,
   timestamp: Date.now()
 };
 
@@ -59,10 +63,12 @@ function render() {
     const div = document.createElement("div");
     div.className = "ride";
 
-    div.innerHTML = `
+div.innerHTML = `
   <strong>Linje ${r.line}</strong><br/>
   ${r.startStation} → ${r.endStation}<br/>
   Vogn ${r.carNumber}<br/>
+  Start: ${r.startTime || "ikke satt"}<br/>
+  Slutt: ${r.endTime || "ikke satt"}<br/>
   <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
 `;
 
