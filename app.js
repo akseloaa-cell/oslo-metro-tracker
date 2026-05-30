@@ -14,6 +14,13 @@ const uniqueCarsEl = document.getElementById("uniqueCars");
 const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
 const startDateTime = `${today}T${startTimeEl.value}`;
 const endDateTime = `${today}T${endTimeEl.value}`;
+const lineColors = {
+  "1": "#029cda",
+  "2": "#e95d11",
+  "3": "#a964a3",
+  "4": "#004896",
+  "5": "#39a935"
+};
 
 let rides = JSON.parse(localStorage.getItem("rides")) || [];
 
