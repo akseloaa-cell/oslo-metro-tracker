@@ -13,11 +13,11 @@ const uniqueCarsEl = document.getElementById("uniqueCars");
 let rides = JSON.parse(localStorage.getItem("rides")) || [];
 
 lineEl.addEventListener("change", () => {
-  const stations = metroLines[lineEl.value];
-  console.log(stations);
+  populateStations(lineEl.value);
 });
 // render ved start
 render();
+populateStations(lineEl.value);
 
 addBtn.addEventListener("click", () => {
   if (!carNumberEl.value) {
@@ -67,5 +67,24 @@ function render() {
 `;
 
     listEl.appendChild(div);
+  });
+}
+
+function populateStations(line) {
+  const stations = metroLines[line];
+
+  startStationEl.innerHTML = "";
+  endStationEl.innerHTML = "";
+
+  stations.forEach(station => {
+    const option1 = document.createElement("option");
+    option1.value = station;
+    option1.textContent = station;
+    startStationEl.appendChild(option1);
+
+    const option2 = document.createElement("option");
+    option2.value = station;
+    option2.textContent = station;
+    endStationEl.appendChild(option2);
   });
 }
