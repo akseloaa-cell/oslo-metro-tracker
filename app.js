@@ -116,5 +116,12 @@ function populateStations(line) {
 
 function updateFormColor() {
   const color = lineColors[lineEl.value];
-  document.querySelector(".form").style.border = `2px solid ${color}`;
+
+  const form = document.querySelector(".form");
+
+  form.style.border = `2px solid ${color}`;
+  form.style.boxShadow = `
+  0 0 10px ${color}55,
+  0 4px 20px rgba(0,0,0,0.08)
+`;
 }
