@@ -19,10 +19,13 @@ let rides = JSON.parse(localStorage.getItem("rides")) || [];
 
 lineEl.addEventListener("change", () => {
   populateStations(lineEl.value);
+  updateFormColor();
 });
+
 // render ved start
 render();
 populateStations(lineEl.value);
+updateFormColor();
 
 addBtn.addEventListener("click", () => {
   if (!carNumberEl.value) {
@@ -68,6 +71,10 @@ function render() {
     const div = document.createElement("div");
     div.className = "ride";
 
+    const color = lineColors[r.line];
+div.style.borderLeft = `6px solid ${color}`;
+div.style.paddingLeft = "10px";
+    
 div.innerHTML = `
   <strong>Linje ${r.line}</strong><br/>
   ${r.startStation} (${r.startTime?.split("T")[1] || "?"})
@@ -98,4 +105,9 @@ function populateStations(line) {
     option2.textContent = station;
     endStationEl.appendChild(option2);
   });
+}
+
+function updateFormColor() {
+  const color = lineColors[lineEl.value];
+  document.querySelector(".form").style.border = `2px solid ${color}`;
 }
