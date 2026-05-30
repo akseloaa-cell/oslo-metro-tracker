@@ -1,1 +1,13 @@
-
+{
+  "name": "Oslo Metro Tracker",
+  "short_name": "Metro Tracker",
+  "start_url": ".",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
