@@ -162,7 +162,7 @@ export const metroLines = {
     "Grønland",
     "Jernbanetorget",
     "Stortinget",
-    "Nationaltheatret
+    "Nationaltheatret,
     "Majorstuen",
     "Blindern",
     "Forskningsparken",
