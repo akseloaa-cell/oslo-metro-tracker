@@ -54,3 +54,16 @@ button {
 #stats p {
   margin: 6px 0;
 }
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 90px 1fr 90px;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+select, input {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+}
