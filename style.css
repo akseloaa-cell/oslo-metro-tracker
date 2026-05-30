@@ -67,3 +67,14 @@ select, input {
   border-radius: 8px;
   border: none;
 }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 12px;
+  opacity: 0.7;
+}
