@@ -1,1 +1,36 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oslo Metro Tracker</title>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
 
+  <div class="container">
+    <h1>🚇 Metro Tracker</h1>
+
+    <div class="form">
+      <select id="line">
+        <option value="1">Linje 1</option>
+        <option value="2">Linje 2</option>
+        <option value="3">Linje 3</option>
+        <option value="4">Linje 4</option>
+        <option value="5">Linje 5</option>
+      </select>
+
+      <input id="direction" placeholder="Retning (f.eks. Vestli)" />
+
+      <input id="trainSet" placeholder="Togsett (f.eks. MX3000-12)" />
+
+      <button id="addBtn">Lagre tur</button>
+    </div>
+
+    <h2>📜 Turer</h2>
+    <div id="list"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
