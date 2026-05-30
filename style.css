@@ -43,3 +43,14 @@ button {
   margin-top: 10px;
   border-radius: 8px;
 }
+
+#stats {
+  background: #1e293b;
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+#stats p {
+  margin: 6px 0;
+}
