@@ -1,3 +1,5 @@
+import { metroLines } from "./lines.js";
+
 const lineEl = document.getElementById("line");
 const startStationEl = document.getElementById("startStation");
 const endStationEl = document.getElementById("endStation");
@@ -10,6 +12,10 @@ const uniqueCarsEl = document.getElementById("uniqueCars");
 
 let rides = JSON.parse(localStorage.getItem("rides")) || [];
 
+lineEl.addEventListener("change", () => {
+  const stations = metroLines[lineEl.value];
+  console.log(stations);
+});
 // render ved start
 render();
 
