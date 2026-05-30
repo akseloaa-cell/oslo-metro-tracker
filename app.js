@@ -21,6 +21,8 @@ const lineColors = {
   "4": "#004896",
   "5": "#39a935"
 };
+const homeView = document.querySelector(".container");
+const pokedexView = document.getElementById("pokedexView");
 
 let rides = JSON.parse(localStorage.getItem("rides")) || [];
 
@@ -124,4 +126,16 @@ function updateFormColor() {
   0 0 10px ${color}55,
   0 4px 20px rgba(0,0,0,0.08)
 `;
+}
+
+
+function showPokedex() {
+  homeView.style.display = "none";
+  pokedexView.style.display = "block";
+  renderPokedex();
+}
+
+function showHome() {
+  homeView.style.display = "block";
+  pokedexView.style.display = "none";
 }
