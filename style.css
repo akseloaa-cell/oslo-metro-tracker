@@ -1,6 +1,22 @@
 /* =========================
    BASE
 ========================= */
+.view {
+  display: none;
+  padding: 16px;
+  max-width: 520px;
+  margin: auto;
+}
+
+.view.active {
+  display: block;
+}
+
+body {
+  background: #0b1220; /* mørk “game UI” bakgrunn */
+  color: white;
+}
+
 body {
   font-family: system-ui, -apple-system, Arial;
   background: #f4f6f8;
