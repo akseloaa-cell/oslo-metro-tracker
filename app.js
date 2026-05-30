@@ -1,4 +1,6 @@
 const lineEl = document.getElementById("line");
+const startStationEl = document.getElementById("startStation");
+const endStationEl = document.getElementById("endStation");
 const directionEl = document.getElementById("direction");
 const carNumberEl = document.getElementById("carNumber");
 const addBtn = document.getElementById("addBtn");
@@ -19,7 +21,8 @@ addBtn.addEventListener("click", () => {
 const ride = {
   id: crypto.randomUUID(),
   line: lineEl.value,
-  direction: directionEl.value,
+  startStation: startStationEl.value,
+  endStation: endStationEl.value,
   carNumber: carNumberEl.value,
   timestamp: Date.now()
 };
@@ -30,7 +33,8 @@ const ride = {
   render();
 
   // reset input
-  directionEl.value = "";
+startStationEl.value = "";
+endStationEl.value = "";
 carNumberEl.value = "";
 });
 
@@ -51,7 +55,7 @@ function render() {
 
     div.innerHTML = `
   <strong>Linje ${r.line}</strong><br/>
-  ${r.direction}<br/>
+  ${r.startStation} → ${r.endStation}<br/>
   Vogn ${r.carNumber}<br/>
   <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
 `;
