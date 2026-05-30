@@ -1,8 +1,12 @@
+/* =========================
+   BASE
+========================= */
 body {
   font-family: system-ui, -apple-system, Arial;
   background: #f4f6f8;
   margin: 0;
   color: #111;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .container {
@@ -15,6 +19,9 @@ h1 {
   margin-bottom: 20px;
 }
 
+/* =========================
+   FORM CARD
+========================= */
 .form {
   background: white;
   padding: 12px;
@@ -23,6 +30,9 @@ h1 {
   margin-bottom: 16px;
 }
 
+/* =========================
+   INPUTS
+========================= */
 select, input {
   width: 100%;
   padding: 12px;
@@ -30,6 +40,7 @@ select, input {
   border: 1px solid #e5e7eb;
   background: white;
   font-size: 16px;
+  box-sizing: border-box;
 }
 
 button {
@@ -40,8 +51,33 @@ button {
   background: #22c55e;
   color: white;
   font-weight: 600;
+  cursor: pointer;
 }
 
+/* =========================
+   FORM ROW (TIME + STATIONS)
+========================= */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field label {
+  font-size: 12px;
+  opacity: 0.6;
+}
+
+/* =========================
+   RIDE CARD
+========================= */
 .ride {
   background: white;
   padding: 14px;
@@ -58,68 +94,38 @@ button {
   color: #6b7280;
 }
 
-@media (max-width: 600px) {
-  .container {
-    padding: 12px;
-  }
-
-  .ride {
-    padding: 12px;
-  }
-}
-
+/* =========================
+   STATS
+========================= */
 #stats {
   background: #1e293b;
+  color: white;
   padding: 12px;
-  border-radius: 10px;
-  margin-bottom: 20px;
+  border-radius: 12px;
+  margin-bottom: 16px;
 }
 
 #stats p {
   margin: 6px 0;
 }
 
-.form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-select, input {
-  padding: 10px;
-  border-radius: 8px;
-  border: none;
-}
-
-.field {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.field label {
-  font-size: 12px;
-  opacity: 0.7;
-}
-
+/* =========================
+   MOBILE
+========================= */
 @media (max-width: 600px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
-
-  button {
-    width: 100%;
-  }
-
   .container {
     padding: 12px;
   }
 
-  select, input {
-    font-size: 16px; /* hindrer zoom på iPhone */
+  .form-row {
+    grid-template-columns: 1fr;
   }
-}
 
-body {
-  -webkit-tap-highlight-color: transparent;
+  select, input {
+    font-size: 16px;
+  }
+
+  .ride {
+    padding: 12px;
+  }
 }
