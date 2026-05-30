@@ -11,6 +11,9 @@ const addBtn = document.getElementById("addBtn");
 const listEl = document.getElementById("list");
 const totalRidesEl = document.getElementById("totalRides");
 const uniqueCarsEl = document.getElementById("uniqueCars");
+const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+const startDateTime = `${today}T${startTimeEl.value}`;
+const endDateTime = `${today}T${endTimeEl.value}`;
 
 let rides = JSON.parse(localStorage.getItem("rides")) || [];
 
@@ -32,8 +35,8 @@ const ride = {
   startStation: startStationEl.value,
   endStation: endStationEl.value,
   carNumber: carNumberEl.value,
-  startTime: startTimeEl.value,
-  endTime: endTimeEl.value,
+  startTime: startDateTime,
+  endTime: endDateTime,
   timestamp: Date.now()
 };
 
@@ -46,6 +49,8 @@ const ride = {
 startStationEl.value = "";
 endStationEl.value = "";
 carNumberEl.value = "";
+startTimeEl.value = "";
+endTimeEl.value = "";
 });
 
 function render() {
@@ -65,10 +70,10 @@ function render() {
 
 div.innerHTML = `
   <strong>Linje ${r.line}</strong><br/>
-  ${r.startStation} → ${r.endStation}<br/>
+  ${r.startStation} (${r.startTime?.split("T")[1] || "?"})
+  → 
+  ${r.endStation} (${r.endTime?.split("T")[1] || "?"})<br/>
   Vogn ${r.carNumber}<br/>
-  Start: ${r.startTime || "ikke satt"}<br/>
-  Slutt: ${r.endTime || "ikke satt"}<br/>
   <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
 `;
 
