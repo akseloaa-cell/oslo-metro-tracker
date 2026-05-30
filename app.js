@@ -139,3 +139,64 @@ function showHome() {
   homeView.style.display = "block";
   pokedexView.style.display = "none";
 }
+
+function buildPokedex() {
+  const map = new Map();
+
+  allCars.forEach(car => {
+    map.set(car, {
+      carNumber: car,
+      seen: false,
+      count: 0,
+      lastSeen: null,
+      line: null
+    });
+  });
+
+  rides.forEach(r => {
+    const car = map.get(r.carNumber);
+    if (!car) return;
+
+    car.seen = true;
+    car.count++;
+    car.lastSeen = r.timestamp;
+    car.line = r.line;
+  });
+
+  return Array.from(map.values());
+}
+
+const pokedexEl = document.getElementById("pokedex");
+
+function renderPokedex() {
+  const cars = buildPokedex();
+  pokedexEl.innerHTML = "";
+
+  cars.forEach(car => {
+    const div = document.createElement("div");
+    div.className = "ride";
+
+    if (car.seen) {
+      const color = lineColors[car.line];
+
+      div.style.borderLeft = `6px solid ${color}`;
+
+      div.innerHTML = `
+        <strong>🚃 ${car.carNumber}</strong><br/>
+        Sett: ${car.count} gang(er)<br/>
+        Sist sett: ${car.lastSeen ? new Date(car.lastSeen).toLocaleString("no-NO") : "-"}
+      `;
+    } else {
+      div.style.opacity = "0.35";
+      div.innerHTML = `
+        🔒 ${car.carNumber}<br/>
+        Ikke oppdaget
+      `;
+    }
+
+    div.onclick = () => openCarDetail(car.carNumber);
+
+    pokedexEl.appendChild(div);
+  });
+}
+
