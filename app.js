@@ -3,6 +3,8 @@ const directionEl = document.getElementById("direction");
 const carNumberEl = document.getElementById("carNumber");
 const addBtn = document.getElementById("addBtn");
 const listEl = document.getElementById("list");
+const totalRidesEl = document.getElementById("totalRides");
+const uniqueCarsEl = document.getElementById("uniqueCars");
 
 let rides = JSON.parse(localStorage.getItem("rides")) || [];
 
@@ -34,6 +36,14 @@ carNumberEl.value = "";
 
 function render() {
   listEl.innerHTML = "";
+
+  totalRidesEl.textContent = rides.length;
+
+  const uniqueCars = new Set(
+    rides.map(r => r.carNumber)
+  );
+
+  uniqueCarsEl.textContent = uniqueCars.size;
 
   rides.forEach(r => {
     const div = document.createElement("div");
