@@ -362,13 +362,21 @@ function openCarDetail(carNumber) {
   modalTitleEl.textContent =
     `🚃 Vogn ${carNumber}`;
 
+  /* ================= LINE STATS ================= */
   const lineMinutes = {};
 
   carRides.forEach(r => {
 
-    const duration =
-      (new Date(r.endTime) - new Date(r.startTime))
-      / 60000;
+    let duration = 0;
+
+    if (r.startTime && r.endTime) {
+      duration =
+        (new Date(r.endTime) - new Date(r.startTime)) / 60000;
+
+      if (isNaN(duration) || duration < 0) {
+        duration = 0;
+      }
+    }
 
     lineMinutes[r.line] =
       (lineMinutes[r.line] || 0) + duration;
@@ -377,38 +385,52 @@ function openCarDetail(carNumber) {
   let statsHtml =
     `<p><strong>Turer:</strong> ${carRides.length}</p>`;
 
-  statsHtml += "<h3>Kjøretid per linje</h3>";
+  statsHtml += `<h3>Kjøretid per linje</h3>`;
 
   Object.entries(lineMinutes).forEach(([line, mins]) => {
     statsHtml += `
       <p>
-        Linje ${line}: ${formatMinutes(mins)}
+        🎨 Linje ${line}: ${formatMinutes(mins)}
       </p>
     `;
   });
 
   modalStatsEl.innerHTML = statsHtml;
 
+  /* ================= RIDES LIST ================= */
   modalRidesEl.innerHTML = "";
 
-  carRides.forEach(r => {
+  carRides
+    .sort((a, b) => b.timestamp - a.timestamp)
+    .forEach(r => {
 
-    const div = document.createElement("div");
+      const div = document.createElement("div");
+      div.className = "ride";
 
-    div.className = "ride";
+      const color = lineColors[r.line] || "#ccc";
 
-    div.innerHTML = `
-      <strong>Linje ${r.line}</strong><br/>
-      ${r.startStation}
-      →
-      ${r.endStation}<br/>
-      ${r.startTime.split("T")[1]}
-      -
-      ${r.endTime.split("T")[1]}
-    `;
+      const startTime = r.startTime?.split("T")[1] || "?";
+      const endTime = r.endTime?.split("T")[1] || "?";
 
-    modalRidesEl.appendChild(div);
-  });
+      const date = r.timestamp
+        ? new Date(r.timestamp).toLocaleDateString("no-NO")
+        : "?";
+
+      div.style.borderLeft = `5px solid ${color}`;
+      div.style.paddingLeft = "10px";
+
+      div.innerHTML = `
+        <strong>Linje ${r.line}</strong><br/>
+
+        🚉 ${r.startStation} → ${r.endStation}<br/>
+
+        ⏰ ${startTime} - ${endTime}<br/>
+
+        📅 ${date}
+      `;
+
+      modalRidesEl.appendChild(div);
+    });
 
   modalEl.classList.add("open");
 }
