@@ -221,3 +221,37 @@ button {
   bottom: 0;
   width: 8px;
 }
+
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+
+  justify-content: center;
+  align-items: center;
+
+  padding: 16px;
+}
+
+.modal.open {
+  display: flex;
+}
+
+.modal-content {
+  background: white;
+  width: 100%;
+  max-width: 500px;
+  max-height: 80vh;
+
+  overflow-y: auto;
+
+  border-radius: 20px;
+  padding: 16px;
+}
+
+#closeModal {
+  width: auto;
+  float: right;
+}
