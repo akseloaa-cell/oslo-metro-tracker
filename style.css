@@ -190,3 +190,16 @@ button {
   flex-direction: column;
   gap: 10px;
 }
+
+.ride-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.ride-actions button {
+  width: auto;
+  padding: 6px 10px;
+  font-size: 12px;
+  border-radius: 8px;
+}
