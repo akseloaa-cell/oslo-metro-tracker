@@ -7,6 +7,10 @@ const startStationEl = document.getElementById("startStation");
 const endStationEl = document.getElementById("endStation");
 const startTimeEl = document.getElementById("startTime");
 const endTimeEl = document.getElementById("endTime");
+const duration =
+  (new Date(r.endTime) - new Date(r.startTime))
+  / 60000;
+
 const carNumberEl = document.getElementById("carNumber");
 
 const addBtn = document.getElementById("addBtn");
@@ -195,26 +199,66 @@ function buildPokedex() {
   const map = new Map();
 
   allCars.forEach(car => {
-    map.set(car, {
-      carNumber: car,
-      seen: false,
-      count: 0,
-      lastSeen: null,
-      line: null
-    });
+map.set(car, {
+  carNumber: car,
+  seen: false,
+  count: 0,
+  lastSeen: null,
+  lineMinutes: {}
+});
   });
 
   rides.forEach(r => {
     const car = map.get(r.carNumber);
     if (!car) return;
 
-    car.seen = true;
-    car.count++;
-    car.lastSeen = r.timestamp;
-    car.line = r.line;
+car.seen = true;
+car.count++;
+car.lastSeen = r.timestamp;
+
+const duration =
+  (new Date(r.endTime) - new Date(r.startTime)) / 60000;
+
+car.lineMinutes[r.line] =
+  (car.lineMinutes[r.line] || 0) + duration;
   });
 
   return Array.from(map.values());
+}
+
+function getLineGradient(lineMinutes) {
+  const total =
+    Object.values(lineMinutes)
+      .reduce((sum, mins) => sum + mins, 0);
+
+  if (total === 0) return "#e5e7eb";
+
+  let start = 0;
+  const parts = [];
+
+  for (const [line, mins] of Object.entries(lineMinutes)) {
+    const percent = (mins / total) * 100;
+    const end = start + percent;
+
+    parts.push(
+      `${lineColors[line]} ${start}% ${end}%`
+    );
+
+    start = end;
+  }
+
+  return `linear-gradient(to bottom, ${parts.join(", ")})`;
+}
+
+function formatMinutes(minutes) {
+  const hours = Math.floor(minutes / 60);
+  const mins = Math.round(minutes % 60);
+
+  if (hours === 0) {
+    return `${mins} min`;
+  }
+
+  return `${hours}t ${mins}m`;
 }
 
 function renderPokedex() {
@@ -225,22 +269,30 @@ function renderPokedex() {
     const div = document.createElement("div");
     div.className = "ride";
 
-    if (car.seen) {
-div.style.borderLeft = "6px solid #e5e7eb";
-div.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
+if (car.seen) {
 
-      div.innerHTML = `
-        <strong>🚃 ${car.carNumber}</strong><br/>
-        Sett: ${car.count}<br/>
-        Sist sett: ${car.lastSeen ? new Date(car.lastSeen).toLocaleString("no-NO") : "-"}
-      `;
-    } else {
-      div.style.opacity = "0.35";
-      div.innerHTML = `
-        🔒 ${car.carNumber}<br/>
-        Ikke oppdaget
-      `;
-    }
+  const totalMinutes =
+    Object.values(car.lineMinutes)
+      .reduce((sum, mins) => sum + mins, 0);
+
+  const gradient =
+    getLineGradient(car.lineMinutes);
+
+  div.innerHTML = `
+    <div class="line-history-bar"
+         style="background:${gradient}">
+    </div>
+
+    <strong>🚃 ${car.carNumber}</strong><br/>
+    ${formatMinutes(totalMinutes)}
+  `;
+} else {
+  div.className = "ride locked";
+
+  div.innerHTML = `
+    🔒 ${car.carNumber}
+  `;
+}
 
     pokedexEl.appendChild(div);
   });
