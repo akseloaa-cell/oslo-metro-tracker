@@ -1,18 +1,23 @@
 import { metroLines } from "./lines.js";
 import { allCars } from "./cars.js";
 
+/* ================= DOM ================= */
 const lineEl = document.getElementById("line");
 const startStationEl = document.getElementById("startStation");
 const endStationEl = document.getElementById("endStation");
 const startTimeEl = document.getElementById("startTime");
 const endTimeEl = document.getElementById("endTime");
-const directionEl = document.getElementById("direction");
 const carNumberEl = document.getElementById("carNumber");
+
 const addBtn = document.getElementById("addBtn");
 const listEl = document.getElementById("list");
+
 const totalRidesEl = document.getElementById("totalRides");
 const uniqueCarsEl = document.getElementById("uniqueCars");
 
+const pokedexEl = document.getElementById("pokedex");
+
+/* ================= COLORS ================= */
 const lineColors = {
   "1": "#029cda",
   "2": "#e95d11",
@@ -20,62 +25,64 @@ const lineColors = {
   "4": "#004896",
   "5": "#39a935"
 };
-const homeView = document.querySelector(".container");
+
+/* ================= VIEWS ================= */
+const homeView = document.getElementById("homeView");
 const pokedexView = document.getElementById("pokedexView");
 
+/* ================= STATE ================= */
 let rides = JSON.parse(localStorage.getItem("rides")) || [];
 
+/* ================= INIT ================= */
+populateStations(lineEl.value);
+updateFormColor();
+render();
+showView("homeView");
+
+/* ================= EVENTS ================= */
 lineEl.addEventListener("change", () => {
   populateStations(lineEl.value);
   updateFormColor();
 });
 
-// render ved start
-render();
-populateStations(lineEl.value);
-updateFormColor();
-
 addBtn.addEventListener("click", () => {
-  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-  const startDateTime = `${today}T${startTimeEl.value}`;
-  const endDateTime = `${today}T${endTimeEl.value}`;
   if (!carNumberEl.value) {
-  alert("Skriv inn et vognnummer.");
-  return;
-}
-const ride = {
-  id: crypto.randomUUID(),
-  line: lineEl.value,
-  startStation: startStationEl.value,
-  endStation: endStationEl.value,
-  carNumber: carNumberEl.value,
-  startTime: startDateTime,
-  endTime: endDateTime,
-  timestamp: Date.now()
-};
+    alert("Skriv inn et vognnummer.");
+    return;
+  }
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const ride = {
+    id: crypto.randomUUID(),
+    line: lineEl.value,
+    startStation: startStationEl.value,
+    endStation: endStationEl.value,
+    carNumber: carNumberEl.value,
+    startTime: `${today}T${startTimeEl.value}`,
+    endTime: `${today}T${endTimeEl.value}`,
+    timestamp: Date.now()
+  };
 
   rides.unshift(ride);
   localStorage.setItem("rides", JSON.stringify(rides));
 
   render();
 
-  // reset input
-startStationEl.value = "";
-endStationEl.value = "";
-carNumberEl.value = "";
-startTimeEl.value = "";
-endTimeEl.value = "";
+  startStationEl.value = "";
+  endStationEl.value = "";
+  carNumberEl.value = "";
+  startTimeEl.value = "";
+  endTimeEl.value = "";
 });
 
+/* ================= RENDER HOME ================= */
 function render() {
   listEl.innerHTML = "";
 
   totalRidesEl.textContent = rides.length;
 
-  const uniqueCars = new Set(
-    rides.map(r => r.carNumber)
-  );
-
+  const uniqueCars = new Set(rides.map(r => r.carNumber));
   uniqueCarsEl.textContent = uniqueCars.size;
 
   rides.forEach(r => {
@@ -83,22 +90,22 @@ function render() {
     div.className = "ride";
 
     const color = lineColors[r.line];
-div.style.borderLeft = `6px solid ${color}`;
-div.style.paddingLeft = "10px";
-    
-div.innerHTML = `
-  <strong>Linje ${r.line}</strong><br/>
-  ${r.startStation} (${r.startTime?.split("T")[1] || "?"})
-  → 
-  ${r.endStation} (${r.endTime?.split("T")[1] || "?"})<br/>
-  Vogn ${r.carNumber}<br/>
-  <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
-`;
+    div.style.borderLeft = `6px solid ${color}`;
+    div.style.paddingLeft = "10px";
+
+    div.innerHTML = `
+      <strong>Linje ${r.line}</strong><br/>
+      ${r.startStation} (${r.startTime?.split("T")[1] || "?"})
+      → ${r.endStation} (${r.endTime?.split("T")[1] || "?"})<br/>
+      Vogn ${r.carNumber}<br/>
+      <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
+    `;
 
     listEl.appendChild(div);
   });
 }
 
+/* ================= STATIONS ================= */
 function populateStations(line) {
   const stations = metroLines[line];
 
@@ -106,42 +113,48 @@ function populateStations(line) {
   endStationEl.innerHTML = "";
 
   stations.forEach(station => {
-    const option1 = document.createElement("option");
-    option1.value = station;
-    option1.textContent = station;
-    startStationEl.appendChild(option1);
+    const opt1 = document.createElement("option");
+    opt1.value = station;
+    opt1.textContent = station;
+    startStationEl.appendChild(opt1);
 
-    const option2 = document.createElement("option");
-    option2.value = station;
-    option2.textContent = station;
-    endStationEl.appendChild(option2);
+    const opt2 = document.createElement("option");
+    opt2.value = station;
+    opt2.textContent = station;
+    endStationEl.appendChild(opt2);
   });
 }
 
+/* ================= UI COLORS ================= */
 function updateFormColor() {
   const color = lineColors[lineEl.value];
-
   const form = document.querySelector(".form");
 
   form.style.border = `2px solid ${color}`;
   form.style.boxShadow = `
-  0 0 10px ${color}55,
-  0 4px 20px rgba(0,0,0,0.08)
-`;
+    0 0 10px ${color}55,
+    0 4px 20px rgba(0,0,0,0.08)
+  `;
 }
 
+/* ================= VIEW SYSTEM ================= */
+function showView(viewId) {
+  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
+  document.getElementById(viewId).classList.add("active");
 
-function showPokedex() {
-  homeView.style.display = "none";
-  pokedexView.style.display = "block";
-  renderPokedex();
+  if (viewId === "pokedexView") renderPokedex();
 }
 
-function showHome() {
-  homeView.style.display = "block";
-  pokedexView.style.display = "none";
-}
+/* ================= BUTTONS ================= */
+document.getElementById("btnPokedex").addEventListener("click", () => {
+  showView("pokedexView");
+});
 
+document.getElementById("btnHome").addEventListener("click", () => {
+  showView("homeView");
+});
+
+/* ================= POKÉDEX ================= */
 function buildPokedex() {
   const map = new Map();
 
@@ -168,8 +181,6 @@ function buildPokedex() {
   return Array.from(map.values());
 }
 
-const pokedexEl = document.getElementById("pokedex");
-
 function renderPokedex() {
   const cars = buildPokedex();
   pokedexEl.innerHTML = "";
@@ -185,7 +196,7 @@ function renderPokedex() {
 
       div.innerHTML = `
         <strong>🚃 ${car.carNumber}</strong><br/>
-        Sett: ${car.count} gang(er)<br/>
+        Sett: ${car.count}<br/>
         Sist sett: ${car.lastSeen ? new Date(car.lastSeen).toLocaleString("no-NO") : "-"}
       `;
     } else {
@@ -196,14 +207,6 @@ function renderPokedex() {
       `;
     }
 
-    div.onclick = () => openCarDetail(car.carNumber);
-
     pokedexEl.appendChild(div);
   });
 }
-
-function showView(view) {
-  document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
-  document.getElementById(view).classList.add("active");
-}
-
