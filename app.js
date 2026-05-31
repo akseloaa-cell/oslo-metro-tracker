@@ -18,6 +18,11 @@ const uniqueCarsEl = document.getElementById("uniqueCars");
 
 const pokedexEl = document.getElementById("pokedex");
 
+const modalEl = document.getElementById("carModal");
+const modalTitleEl = document.getElementById("modalTitle");
+const modalStatsEl = document.getElementById("modalStats");
+const modalRidesEl = document.getElementById("modalRides");
+const closeModalBtn = document.getElementById("closeModal");
 /* ================= COLORS ================= */
 const lineColors = {
   "1": "#029cda",
@@ -52,6 +57,10 @@ addBtn.addEventListener("click", () => {
     return;
   }
 
+closeModalBtn.addEventListener("click", () => {
+  modalEl.classList.remove("open");
+});
+  
   const today = new Date().toISOString().split("T")[0];
 
   const ride = {
@@ -337,6 +346,69 @@ if (car.seen) {
   `;
 }
 
+    div.addEventListener("click", () => {
+  openCarDetail(car.carNumber);
+});
+    
     pokedexEl.appendChild(div);
   });
+}
+
+function openCarDetail(carNumber) {
+
+  const carRides =
+    rides.filter(r => String(r.carNumber) === String(carNumber));
+
+  modalTitleEl.textContent =
+    `🚃 Vogn ${carNumber}`;
+
+  const lineMinutes = {};
+
+  carRides.forEach(r => {
+
+    const duration =
+      (new Date(r.endTime) - new Date(r.startTime))
+      / 60000;
+
+    lineMinutes[r.line] =
+      (lineMinutes[r.line] || 0) + duration;
+  });
+
+  let statsHtml =
+    `<p><strong>Turer:</strong> ${carRides.length}</p>`;
+
+  statsHtml += "<h3>Kjøretid per linje</h3>";
+
+  Object.entries(lineMinutes).forEach(([line, mins]) => {
+    statsHtml += `
+      <p>
+        Linje ${line}: ${formatMinutes(mins)}
+      </p>
+    `;
+  });
+
+  modalStatsEl.innerHTML = statsHtml;
+
+  modalRidesEl.innerHTML = "";
+
+  carRides.forEach(r => {
+
+    const div = document.createElement("div");
+
+    div.className = "ride";
+
+    div.innerHTML = `
+      <strong>Linje ${r.line}</strong><br/>
+      ${r.startStation}
+      →
+      ${r.endStation}<br/>
+      ${r.startTime.split("T")[1]}
+      -
+      ${r.endTime.split("T")[1]}
+    `;
+
+    modalRidesEl.appendChild(div);
+  });
+
+  modalEl.classList.add("open");
 }
