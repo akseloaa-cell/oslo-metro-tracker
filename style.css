@@ -154,8 +154,12 @@ button {
 
 /* pokedex cards */
 #pokedex .ride {
-  font-size: 12px;
+  background: white;
+  border-left: 6px solid #e5e7eb;
+  border-radius: 14px;
   padding: 10px;
+  font-size: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
 /* =========================
