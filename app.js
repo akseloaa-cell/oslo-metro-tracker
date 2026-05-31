@@ -1,4 +1,5 @@
 import { metroLines } from "./lines.js";
+import { allCars } from "./cars.js";
 
 const lineEl = document.getElementById("line");
 const startStationEl = document.getElementById("startStation");
@@ -11,9 +12,7 @@ const addBtn = document.getElementById("addBtn");
 const listEl = document.getElementById("list");
 const totalRidesEl = document.getElementById("totalRides");
 const uniqueCarsEl = document.getElementById("uniqueCars");
-const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-const startDateTime = `${today}T${startTimeEl.value}`;
-const endDateTime = `${today}T${endTimeEl.value}`;
+
 const lineColors = {
   "1": "#029cda",
   "2": "#e95d11",
@@ -37,6 +36,9 @@ populateStations(lineEl.value);
 updateFormColor();
 
 addBtn.addEventListener("click", () => {
+  const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+  const startDateTime = `${today}T${startTimeEl.value}`;
+  const endDateTime = `${today}T${endTimeEl.value}`;
   if (!carNumberEl.value) {
   alert("Skriv inn et vognnummer.");
   return;
