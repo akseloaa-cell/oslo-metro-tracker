@@ -387,13 +387,23 @@ function openCarDetail(carNumber) {
 
   statsHtml += `<h3>Kjøretid per linje</h3>`;
 
-  Object.entries(lineMinutes).forEach(([line, mins]) => {
-    statsHtml += `
-      <p>
-        🎨 Linje ${line}: ${formatMinutes(mins)}
-      </p>
-    `;
-  });
+Object.entries(lineMinutes).forEach(([line, mins]) => {
+
+  const color = lineColors[line] || "#ccc";
+
+  statsHtml += `
+    <div style="
+      border-left: 5px solid ${color};
+      background: #f8fafc;
+      padding: 8px 10px;
+      border-radius: 10px;
+      margin-bottom: 8px;
+    ">
+      <strong>Linje ${line}</strong><br/>
+      ${formatMinutes(mins)}
+    </div>
+  `;
+});
 
   modalStatsEl.innerHTML = statsHtml;
 
