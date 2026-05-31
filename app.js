@@ -7,9 +7,6 @@ const startStationEl = document.getElementById("startStation");
 const endStationEl = document.getElementById("endStation");
 const startTimeEl = document.getElementById("startTime");
 const endTimeEl = document.getElementById("endTime");
-const duration =
-  (new Date(r.endTime) - new Date(r.startTime))
-  / 60000;
 
 const carNumberEl = document.getElementById("carNumber");
 
@@ -84,40 +81,71 @@ addBtn.addEventListener("click", () => {
 function render() {
   listEl.innerHTML = "";
 
+  // Stats
   totalRidesEl.textContent = rides.length;
 
-  const uniqueCars = new Set(rides.map(r => r.carNumber));
+  const uniqueCars = new Set(
+    rides.map(r => r.carNumber)
+  );
+
   uniqueCarsEl.textContent = uniqueCars.size;
 
+  // Turer
   rides.forEach(r => {
     const div = document.createElement("div");
     div.className = "ride";
 
-    const color = lineColors[r.line];
+    const color = lineColors[r.line] || "#cccccc";
+
     div.style.borderLeft = `6px solid ${color}`;
-    div.style.paddingLeft = "10px";
 
-div.innerHTML = `
-  <strong>Linje ${r.line}</strong><br/>
-  ${r.startStation} (${r.startTime?.split("T")[1] || "?"})
-  → ${r.endStation} (${r.endTime?.split("T")[1] || "?"})<br/>
-  Vogn ${r.carNumber}<br/>
-  <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
+    const startTime = r.startTime
+      ? r.startTime.split("T")[1]
+      : "?";
 
-  <div class="ride-actions">
-    <button class="edit-btn">✏️</button>
-    <button class="delete-btn">🗑️</button>
-  </div>
-`;
+    const endTime = r.endTime
+      ? r.endTime.split("T")[1]
+      : "?";
 
-    div.querySelector(".delete-btn").addEventListener("click", () => {
-  deleteRide(r.id);
-});
+    div.innerHTML = `
+      <strong>Linje ${r.line}</strong><br/>
 
-div.querySelector(".edit-btn").addEventListener("click", () => {
-  editRide(r.id);
-});
-    
+      🚉 ${r.startStation}
+      (${startTime})
+
+      →
+
+      ${r.endStation}
+      (${endTime})
+
+      <br/>
+
+      🚃 Vogn ${r.carNumber}
+
+      <br/>
+
+      <small>
+        Registrert
+        ${new Date(r.timestamp)
+          .toLocaleString("no-NO")}
+      </small>
+
+      <div class="ride-actions">
+        <button class="edit-btn">✏️</button>
+        <button class="delete-btn">🗑️</button>
+      </div>
+    `;
+
+    div.querySelector(".delete-btn")
+      .addEventListener("click", () => {
+        deleteRide(r.id);
+      });
+
+    div.querySelector(".edit-btn")
+      .addEventListener("click", () => {
+        editRide(r.id);
+      });
+
     listEl.appendChild(div);
   });
 }
@@ -198,15 +226,48 @@ document.getElementById("btnHome").addEventListener("click", () => {
 function buildPokedex() {
   const map = new Map();
 
+  // Opprett alle vogner
   allCars.forEach(car => {
-map.set(car, {
-  carNumber: car,
-  seen: false,
-  count: 0,
-  lastSeen: null,
-  lineMinutes: {}
-});
+    map.set(String(car), {
+      carNumber: String(car),
+      seen: false,
+      count: 0,
+      lastSeen: null,
+      lineMinutes: {}
+    });
   });
+
+  // Gå gjennom alle registrerte turer
+  rides.forEach(r => {
+    const car = map.get(String(r.carNumber));
+
+    if (!car) return;
+
+    car.seen = true;
+    car.count++;
+    car.lastSeen = r.timestamp;
+
+    // Regn ut kjøretid i minutter
+    let duration = 0;
+
+    if (r.startTime && r.endTime) {
+      duration =
+        (new Date(r.endTime) - new Date(r.startTime))
+        / 60000;
+
+      // Hindrer negative eller ugyldige verdier
+      if (isNaN(duration) || duration < 0) {
+        duration = 0;
+      }
+    }
+
+    // Legg til minutter på riktig linje
+    car.lineMinutes[r.line] =
+      (car.lineMinutes[r.line] || 0) + duration;
+  });
+
+  return Array.from(map.values());
+}
 
   rides.forEach(r => {
     const car = map.get(r.carNumber);
