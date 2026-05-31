@@ -1,6 +1,8 @@
+
 /* =========================
-   BASE
+   BASE VIEW SYSTEM
 ========================= */
+
 .view {
   display: none;
   padding: 16px;
@@ -12,18 +14,21 @@
   display: block;
 }
 
-body {
-  background: #0b1220; /* mørk “game UI” bakgrunn */
-  color: white;
-}
+/* =========================
+   THEME (GAME DARK UI)
+========================= */
 
 body {
   font-family: system-ui, -apple-system, Arial;
-  background: #f4f6f8;
+  background: #0b1220;
   margin: 0;
-  color: #111;
+  color: white;
   -webkit-tap-highlight-color: transparent;
 }
+
+/* =========================
+   LAYOUT
+========================= */
 
 .container {
   max-width: 520px;
@@ -31,32 +36,47 @@ body {
   padding: 16px;
 }
 
-h1 {
-  margin-bottom: 20px;
+h1, h2 {
+  margin-bottom: 16px;
 }
 
 /* =========================
-   FORM CARD
+   CARDS (FORM + STATS)
 ========================= */
-.form, #stats {
+
+.form,
+#stats {
   background: #111a2e;
   border-radius: 16px;
   padding: 12px;
   box-shadow: 0 0 0 1px rgba(255,255,255,0.05);
+  margin-bottom: 12px;
+}
+
+/* smooth border glow transition */
+.form {
+  transition: border 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* =========================
    INPUTS
 ========================= */
-select, input {
+
+select,
+input {
   width: 100%;
   padding: 12px;
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  background: white;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: #0f172a;
+  color: white;
   font-size: 16px;
   box-sizing: border-box;
 }
+
+/* =========================
+   BUTTONS
+========================= */
 
 button {
   background: #1f2a44;
@@ -65,11 +85,13 @@ button {
   border-radius: 12px;
   padding: 10px;
   font-weight: 600;
+  cursor: pointer;
 }
 
 /* =========================
-   FORM ROW (TIME + STATIONS)
+   FORM LAYOUT
 ========================= */
+
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -88,47 +110,59 @@ button {
   opacity: 0.6;
 }
 
-.form {
-  transition: box-shadow 0.3s ease, border 0.3s ease;
-}
 /* =========================
-   RIDE CARD
+   RIDE CARD (HOME LIST)
 ========================= */
+
 .ride {
-  background: white;
-  padding: 14px;
-  border-radius: 16px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  background: #111a2e;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+  font-size: 13px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
+  transition: transform 0.15s ease;
 }
 
-.ride strong {
-  font-size: 15px;
+.ride:active {
+  transform: scale(0.98);
 }
 
 .ride small {
-  color: #6b7280;
+  opacity: 0.7;
 }
 
 /* =========================
    STATS
 ========================= */
-#stats {
-  background: white;
-  color: #111;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 16px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
 
 #stats p {
   margin: 6px 0;
 }
 
 /* =========================
+   POKÉDEX GRID
+========================= */
+
+#pokedex {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* =========================
+   LOCKED STATE
+========================= */
+
+.locked {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+/* =========================
    MOBILE
 ========================= */
+
 @media (max-width: 600px) {
   .container {
     padding: 12px;
@@ -138,38 +172,12 @@ button {
     grid-template-columns: 1fr;
   }
 
-  select, input {
+  #pokedex {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  select,
+  input {
     font-size: 16px;
   }
-
-  .ride {
-    padding: 12px;
-  }
-}
-
-#pokedex {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-}
-
-.ride {
-  background: #111a2e;
-  border-radius: 14px;
-  padding: 10px;
-  font-size: 12px;
-  transition: transform 0.15s ease;
-}
-
-.ride:active {
-  transform: scale(0.96);
-}
-
-.locked {
-  opacity: 0.35;
-  filter: grayscale(1);
-}
-
-.ride {
-  box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
