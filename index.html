@@ -1,83 +1,105 @@
 <!DOCTYPE html>
 <html lang="no">
 <head>
-  <link rel="icon" href="c85c805d-9054-4ae6-aca3-6cd8666f5b71.png">
-  <link rel="manifest" href="manifest.json">
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
   <title>Oslo Metro Tracker</title>
+
+  <link rel="icon" href="c85c805d-9054-4ae6-aca3-6cd8666f5b71.png">
+  <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="style.css"/>
+
   <script type="module" src="app.js"></script>
 </head>
+
 <body>
-  
-<div id="homeView" class="view">
-  
-  <div class="container">
-    <h1>🚇 Metro Tracker</h1>
 
-<button id="btnPokedex">📘 Pokédex</button>
-<button id="btnHome">🏠 Hjem</button>
-    
-    <div class="form">
-      <select id="line">
-        <option value="1">Linje 1</option>
-        <option value="2">Linje 2</option>
-        <option value="3">Linje 3</option>
-        <option value="4">Linje 4</option>
-        <option value="5">Linje 5</option>
-      </select>
+  <!-- ================= HOME VIEW ================= -->
+  <div id="homeView" class="view active">
 
-<div class="form-row">
+    <div class="container">
 
-  <div class="field">
-    <label>Startstopp</label>
-    <select id="startStation"></select>
-  </div>
+      <h1>🚇 Metro Tracker</h1>
 
-  <div class="field">
-    <label>Starttid</label>
-    <input id="startTime" type="time" />
-  </div>
+      <!-- NAV -->
+      <div class="nav">
+        <button id="btnPokedex">📘 Pokédex</button>
+      </div>
 
-  <div class="field">
-    <label>Endestopp</label>
-    <select id="endStation"></select>
-  </div>
+      <!-- FORM CARD -->
+      <div class="form">
 
-  <div class="field">
-    <label>Sluttid</label>
-    <input id="endTime" type="time" />
-  </div>
+        <select id="line">
+          <option value="1">Linje 1</option>
+          <option value="2">Linje 2</option>
+          <option value="3">Linje 3</option>
+          <option value="4">Linje 4</option>
+          <option value="5">Linje 5</option>
+        </select>
 
-</div>
-      
-      <input
-  id="carNumber"
-  type="number"
-  placeholder="Vognnummer (f.eks. 3154)"
-/>
+        <div class="form-row">
 
-      <button id="addBtn">Lagre tur</button>
+          <div class="field">
+            <label>Startstopp</label>
+            <select id="startStation"></select>
+          </div>
+
+          <div class="field">
+            <label>Starttid</label>
+            <input id="startTime" type="time" />
+          </div>
+
+          <div class="field">
+            <label>Endestopp</label>
+            <select id="endStation"></select>
+          </div>
+
+          <div class="field">
+            <label>Sluttid</label>
+            <input id="endTime" type="time" />
+          </div>
+
+        </div>
+
+        <input
+          id="carNumber"
+          type="number"
+          placeholder="Vognnummer (f.eks. 3154)"
+        />
+
+        <button id="addBtn">Lagre tur</button>
+
+      </div>
+
+      <!-- STATS -->
+      <div id="stats">
+        <p>🚇 Totale turer: <span id="totalRides">0</span></p>
+        <p>🚃 Unike vogner: <span id="uniqueCars">0</span></p>
+      </div>
+
+      <!-- HISTORY -->
+      <h2>📜 Turer</h2>
+      <div id="list"></div>
+
     </div>
-
-    <div id="stats">
-  <p>🚇 Totale turer: <span id="totalRides">0</span></p>
-  <p>🚃 Unike vogner: <span id="uniqueCars">0</span></p>
-</div>
-
-    </div>
-  
-    <div id="pokedexView" class="view" style="display:none;">
-  <h2>📘 Vogn Pokédex</h2>
-  <div id="pokedex"></div>
-</div>
-    
-<h2>📜 Turer</h2>
-<div id="list"></div>
-    
   </div>
 
-  <script type="module" src="app.js"></script>
+  <!-- ================= POKÉDEX VIEW ================= -->
+  <div id="pokedexView" class="view">
+
+    <div class="container">
+
+      <div class="nav">
+        <button id="btnHome">🏠 Hjem</button>
+      </div>
+
+      <h2>📘 Vogn Pokédex</h2>
+
+      <div id="pokedex"></div>
+
+    </div>
+  </div>
+
 </body>
 </html>
