@@ -184,3 +184,9 @@ button {
     font-size: 16px;
   }
 }
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
