@@ -93,18 +93,54 @@ function render() {
     div.style.borderLeft = `6px solid ${color}`;
     div.style.paddingLeft = "10px";
 
-    div.innerHTML = `
-      <strong>Linje ${r.line}</strong><br/>
-      ${r.startStation} (${r.startTime?.split("T")[1] || "?"})
-      → ${r.endStation} (${r.endTime?.split("T")[1] || "?"})<br/>
-      Vogn ${r.carNumber}<br/>
-      <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
-    `;
+div.innerHTML = `
+  <strong>Linje ${r.line}</strong><br/>
+  ${r.startStation} (${r.startTime?.split("T")[1] || "?"})
+  → ${r.endStation} (${r.endTime?.split("T")[1] || "?"})<br/>
+  Vogn ${r.carNumber}<br/>
+  <small>${new Date(r.timestamp).toLocaleString("no-NO")}</small>
 
+  <div class="ride-actions">
+    <button class="edit-btn">✏️</button>
+    <button class="delete-btn">🗑️</button>
+  </div>
+`;
+
+    div.querySelector(".delete-btn").addEventListener("click", () => {
+  deleteRide(r.id);
+});
+
+div.querySelector(".edit-btn").addEventListener("click", () => {
+  editRide(r.id);
+});
+    
     listEl.appendChild(div);
   });
 }
 
+function deleteRide(id) {
+  rides = rides.filter(r => r.id !== id);
+  localStorage.setItem("rides", JSON.stringify(rides));
+  render();
+}
+
+function editRide(id) {
+  const ride = rides.find(r => r.id === id);
+  if (!ride) return;
+
+  const newCar = prompt("Vognnummer:", ride.carNumber);
+  if (!newCar) return;
+
+  const newStart = prompt("Startstopp:", ride.startStation);
+  const newEnd = prompt("Endestopp:", ride.endStation);
+
+  ride.carNumber = newCar;
+  ride.startStation = newStart;
+  ride.endStation = newEnd;
+
+  localStorage.setItem("rides", JSON.stringify(rides));
+  render();
+}
 /* ================= STATIONS ================= */
 function populateStations(line) {
   const stations = metroLines[line];
