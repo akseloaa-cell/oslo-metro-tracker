@@ -47,7 +47,7 @@ lineEl.addEventListener("change", () => {
 });
 
 addBtn.addEventListener("click", () => {
-  if (!carNumberEl.value) {
+  if (!carNumberEl.value.trim()) {
     alert("Skriv inn et vognnummer.");
     return;
   }
@@ -264,24 +264,6 @@ function buildPokedex() {
     // Legg til minutter på riktig linje
     car.lineMinutes[r.line] =
       (car.lineMinutes[r.line] || 0) + duration;
-  });
-
-  return Array.from(map.values());
-}
-
-  rides.forEach(r => {
-    const car = map.get(r.carNumber);
-    if (!car) return;
-
-car.seen = true;
-car.count++;
-car.lastSeen = r.timestamp;
-
-const duration =
-  (new Date(r.endTime) - new Date(r.startTime)) / 60000;
-
-car.lineMinutes[r.line] =
-  (car.lineMinutes[r.line] || 0) + duration;
   });
 
   return Array.from(map.values());
