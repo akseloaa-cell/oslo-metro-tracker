@@ -226,9 +226,8 @@ function renderPokedex() {
     div.className = "ride";
 
     if (car.seen) {
-      const color = lineColors[car.line];
-
-      div.style.borderLeft = `6px solid ${color}`;
+div.style.borderLeft = "6px solid #e5e7eb";
+div.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
 
       div.innerHTML = `
         <strong>🚃 ${car.carNumber}</strong><br/>
