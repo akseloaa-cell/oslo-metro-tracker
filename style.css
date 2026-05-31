@@ -207,3 +207,17 @@ button {
   font-size: 12px;
   border-radius: 8px;
 }
+
+#pokedex .ride {
+  position: relative;
+  overflow: hidden;
+  padding-left: 18px;
+}
+
+.line-history-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+}
