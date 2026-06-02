@@ -255,3 +255,16 @@ button {
   width: auto;
   float: right;
 }
+
+.heatmap-card {
+  background: white;
+  border-radius: 14px;
+  padding: 12px;
+  margin-bottom: 10px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
