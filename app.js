@@ -244,7 +244,7 @@ if (viewId === "pokedexView") {
 if (viewId === "heatmapView") {
   renderHeatmap();
 }
-
+}
 /* ================= BUTTONS ================= */
 document.getElementById("btnPokedex").addEventListener("click", () => {
   showView("pokedexView");
