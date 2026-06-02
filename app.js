@@ -23,6 +23,10 @@ const modalTitleEl = document.getElementById("modalTitle");
 const modalStatsEl = document.getElementById("modalStats");
 const modalRidesEl = document.getElementById("modalRides");
 const closeModalBtn = document.getElementById("closeModal");
+
+closeModalBtn.addEventListener("click", () => {
+  modalEl.classList.remove("open");
+});
 /* ================= COLORS ================= */
 const lineColors = {
   "1": "#029cda",
@@ -57,10 +61,6 @@ addBtn.addEventListener("click", () => {
     return;
   }
 
-closeModalBtn.addEventListener("click", () => {
-  modalEl.classList.remove("open");
-});
-  
   const today = new Date().toISOString().split("T")[0];
 
   const ride = {
