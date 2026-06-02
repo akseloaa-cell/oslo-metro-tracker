@@ -24,9 +24,27 @@ const modalStatsEl = document.getElementById("modalStats");
 const modalRidesEl = document.getElementById("modalRides");
 const closeModalBtn = document.getElementById("closeModal");
 
+const heatmapStatsEl =
+  document.getElementById("heatmapStats");
+
 closeModalBtn.addEventListener("click", () => {
   modalEl.classList.remove("open");
 });
+
+document.getElementById("btnHeatmap")
+  .addEventListener("click", () => {
+    showView("heatmapView");
+  });
+
+document.getElementById("btnHomeFromHeatmap")
+  .addEventListener("click", () => {
+    showView("homeView");
+  });
+
+document.getElementById("btnPokedexFromHeatmap")
+  .addEventListener("click", () => {
+    showView("pokedexView");
+  });
 /* ================= COLORS ================= */
 const lineColors = {
   "1": "#029cda",
@@ -219,7 +237,12 @@ function showView(viewId) {
   document.querySelectorAll(".view").forEach(v => v.classList.remove("active"));
   document.getElementById(viewId).classList.add("active");
 
-  if (viewId === "pokedexView") renderPokedex();
+if (viewId === "pokedexView") {
+  renderPokedex();
+}
+
+if (viewId === "heatmapView") {
+  renderHeatmap();
 }
 
 /* ================= BUTTONS ================= */
@@ -443,4 +466,41 @@ Object.entries(lineMinutes).forEach(([line, mins]) => {
     });
 
   modalEl.classList.add("open");
+}
+
+function renderHeatmap() {
+
+  const visited = {};
+
+  rides.forEach(r => {
+
+    visited[r.startStation] =
+      (visited[r.startStation] || 0) + 1;
+
+    visited[r.endStation] =
+      (visited[r.endStation] || 0) + 1;
+
+  });
+
+  const sorted =
+    Object.entries(visited)
+      .sort((a, b) => b[1] - a[1]);
+
+  heatmapStatsEl.innerHTML = "";
+
+  sorted.forEach(([station, count]) => {
+
+    const div = document.createElement("div");
+
+    div.className = "heatmap-card";
+
+    div.innerHTML = `
+      <strong>${station}</strong>
+      <span>${count}</span>
+    `;
+
+    heatmapStatsEl.appendChild(div);
+
+  });
+
 }
