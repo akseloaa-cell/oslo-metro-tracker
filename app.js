@@ -24,6 +24,13 @@ const modalStatsEl = document.getElementById("modalStats");
 const modalRidesEl = document.getElementById("modalRides");
 const closeModalBtn = document.getElementById("closeModal");
 
+const metroMapObj = document.getElementById("metroMap");
+
+metroMapObj.addEventListener("load", () => {
+  const svgDoc = metroMapObj.contentDocument;
+  window.svgDoc = svgDoc; // gjør den tilgjengelig globalt
+});
+
 const heatmapStatsEl =
   document.getElementById("heatmapStats");
 
@@ -468,39 +475,22 @@ Object.entries(lineMinutes).forEach(([line, mins]) => {
   modalEl.classList.add("open");
 }
 
-function renderHeatmap() {
+function renderHeatmapToSVG() {
+  const svgDoc = document.getElementById("metroMap").contentDocument;
+  if (!svgDoc) return;
 
   const visited = {};
 
   rides.forEach(r => {
-
-    visited[r.startStation] =
-      (visited[r.startStation] || 0) + 1;
-
-    visited[r.endStation] =
-      (visited[r.endStation] || 0) + 1;
-
+    visited[r.startStation] = (visited[r.startStation] || 0) + 1;
+    visited[r.endStation] = (visited[r.endStation] || 0) + 1;
   });
 
-  const sorted =
-    Object.entries(visited)
-      .sort((a, b) => b[1] - a[1]);
+  Object.entries(visited).forEach(([station, count]) => {
+    const el = svgDoc.getElementById(station);
 
-  heatmapStatsEl.innerHTML = "";
-
-  sorted.forEach(([station, count]) => {
-
-    const div = document.createElement("div");
-
-    div.className = "heatmap-card";
-
-    div.innerHTML = `
-      <strong>${station}</strong>
-      <span>${count}</span>
-    `;
-
-    heatmapStatsEl.appendChild(div);
-
+    if (el) {
+      el.style.fill = `rgba(169, 100, 163, ${Math.min(count / 10, 1)})`;
+    }
   });
-
 }
