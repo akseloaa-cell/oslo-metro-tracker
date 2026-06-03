@@ -1,1 +1,239 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 1200 400">
 
+  <style>
+    .line3 {
+      fill: none;
+      stroke: #a964a3;
+      stroke-width: 8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .station {
+      fill: white;
+      stroke: #a964a3;
+      stroke-width: 3;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .station:hover {
+      r: 8;
+      fill: #a964a3;
+    }
+
+    .label {
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      fill: #222;
+    }
+  </style>
+
+  <!-- Linje -->
+  <polyline
+    class="line3"
+    points="
+    50,300
+    80,300
+    110,300
+    140,300
+    170,300
+    200,300
+    230,280
+    260,260
+    290,240
+    320,220
+    350,200
+    380,180
+    410,160
+    440,140
+    470,120
+    500,100
+    560,100
+    620,100
+    680,100
+    740,100
+    800,100
+    860,100
+    920,100
+    980,100
+    1020,120
+    1040,140
+    1060,160
+    1080,180
+    1100,200
+    1120,220
+    1140,240
+    1160,260
+    1180,280
+  "/>
+
+  <!-- STASJONER -->
+
+  <g id="Kolsas">
+    <circle class="station" cx="50" cy="300" r="6"/>
+    <text class="label" x="40" y="325">Kolsås</text>
+  </g>
+
+  <g id="Hauger">
+    <circle class="station" cx="80" cy="300" r="6"/>
+    <text class="label" x="70" y="325">Hauger</text>
+  </g>
+
+  <g id="Gjettum">
+    <circle class="station" cx="110" cy="300" r="6"/>
+    <text class="label" x="95" y="325">Gjettum</text>
+  </g>
+
+  <g id="Avlos">
+    <circle class="station" cx="140" cy="300" r="6"/>
+    <text class="label" x="130" y="325">Avløs</text>
+  </g>
+
+  <g id="Haslum">
+    <circle class="station" cx="170" cy="300" r="6"/>
+    <text class="label" x="155" y="325">Haslum</text>
+  </g>
+
+  <g id="Gjonnes">
+    <circle class="station" cx="200" cy="300" r="6"/>
+    <text class="label" x="185" y="325">Gjønnes</text>
+  </g>
+
+  <g id="Bekkestua">
+    <circle class="station" cx="230" cy="280" r="6"/>
+    <text class="label" x="215" y="305">Bekkestua</text>
+  </g>
+
+  <g id="Ringstabekk">
+    <circle class="station" cx="260" cy="260" r="6"/>
+    <text class="label" x="245" y="285">Ringstabekk</text>
+  </g>
+
+  <g id="Jar">
+    <circle class="station" cx="290" cy="240" r="6"/>
+    <text class="label" x="285" y="265">Jar</text>
+  </g>
+
+  <g id="Bjornsletta">
+    <circle class="station" cx="320" cy="220" r="6"/>
+    <text class="label" x="295" y="245">Bjørnsletta</text>
+  </g>
+
+  <g id="Asjordet">
+    <circle class="station" cx="350" cy="200" r="6"/>
+    <text class="label" x="335" y="225">Åsjordet</text>
+  </g>
+
+  <g id="Ullernasen">
+    <circle class="station" cx="380" cy="180" r="6"/>
+    <text class="label" x="360" y="205">Ullernåsen</text>
+  </g>
+
+  <g id="Montebello">
+    <circle class="station" cx="410" cy="160" r="6"/>
+    <text class="label" x="390" y="185">Montebello</text>
+  </g>
+
+  <g id="Smestad">
+    <circle class="station" cx="440" cy="140" r="6"/>
+    <text class="label" x="425" y="165">Smestad</text>
+  </g>
+
+  <g id="Borgen">
+    <circle class="station" cx="470" cy="120" r="6"/>
+    <text class="label" x="455" y="145">Borgen</text>
+  </g>
+
+  <g id="Majorstuen">
+    <circle class="station" cx="500" cy="100" r="7"/>
+    <text class="label" x="485" y="80">Majorstuen</text>
+  </g>
+
+  <g id="Nationaltheatret">
+    <circle class="station" cx="560" cy="100" r="7"/>
+    <text class="label" x="530" y="80">Nationaltheatret</text>
+  </g>
+
+  <g id="Stortinget">
+    <circle class="station" cx="620" cy="100" r="7"/>
+    <text class="label" x="600" y="80">Stortinget</text>
+  </g>
+
+  <g id="Jernbanetorget">
+    <circle class="station" cx="680" cy="100" r="7"/>
+    <text class="label" x="645" y="80">Jernbanetorget</text>
+  </g>
+
+  <g id="Gronland">
+    <circle class="station" cx="740" cy="100" r="7"/>
+    <text class="label" x="720" y="80">Grønland</text>
+  </g>
+
+  <g id="Toyen">
+    <circle class="station" cx="800" cy="100" r="7"/>
+    <text class="label" x="790" y="80">Tøyen</text>
+  </g>
+
+  <g id="Ensjo">
+    <circle class="station" cx="860" cy="100" r="7"/>
+    <text class="label" x="850" y="80">Ensjø</text>
+  </g>
+
+  <g id="Helsfyr">
+    <circle class="station" cx="920" cy="100" r="7"/>
+    <text class="label" x="905" y="80">Helsfyr</text>
+  </g>
+
+  <g id="Brynseng">
+    <circle class="station" cx="980" cy="100" r="7"/>
+    <text class="label" x="960" y="80">Brynseng</text>
+  </g>
+
+  <g id="Hellerud">
+    <circle class="station" cx="1020" cy="120" r="6"/>
+    <text class="label" x="1005" y="145">Hellerud</text>
+  </g>
+
+  <g id="Godlia">
+    <circle class="station" cx="1040" cy="140" r="6"/>
+    <text class="label" x="1030" y="165">Godlia</text>
+  </g>
+
+  <g id="Skoyenasen">
+    <circle class="station" cx="1060" cy="160" r="6"/>
+    <text class="label" x="1030" y="185">Skøyenåsen</text>
+  </g>
+
+  <g id="Oppsal">
+    <circle class="station" cx="1080" cy="180" r="6"/>
+    <text class="label" x="1065" y="205">Oppsal</text>
+  </g>
+
+  <g id="Ulsrud">
+    <circle class="station" cx="1100" cy="200" r="6"/>
+    <text class="label" x="1085" y="225">Ulsrud</text>
+  </g>
+
+  <g id="Boler">
+    <circle class="station" cx="1120" cy="220" r="6"/>
+    <text class="label" x="1110" y="245">Bøler</text>
+  </g>
+
+  <g id="Bogerud">
+    <circle class="station" cx="1140" cy="240" r="6"/>
+    <text class="label" x="1120" y="265">Bogerud</text>
+  </g>
+
+  <g id="Skullerud">
+    <circle class="station" cx="1160" cy="260" r="6"/>
+    <text class="label" x="1140" y="285">Skullerud</text>
+  </g>
+
+  <g id="Mortensrud">
+    <circle class="station" cx="1180" cy="280" r="6"/>
+    <text class="label" x="1150" y="305">Mortensrud</text>
+  </g>
+
+</svg>
