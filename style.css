@@ -297,3 +297,14 @@ button {
   width: 100%;
   height: 75vh;
 }
+
+#metroMap svg {
+  width: 100%;
+  height: 100%;
+  transform: scale(1.2);
+  transform-origin: center;
+}
+
+text {
+  font-size: 10px;
+}
