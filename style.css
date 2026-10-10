@@ -308,3 +308,69 @@ button {
 text {
   font-size: 10px;
 }
+
+
+/* =========================
+   EDIT RIDE MODAL
+========================= */
+.edit-modal-content {
+  box-sizing: border-box;
+}
+
+.edit-modal-content h2 {
+  margin-top: 0;
+  padding-right: 36px;
+}
+
+.edit-help {
+  color: #6b7280;
+  font-size: 14px;
+  margin-top: -4px;
+}
+
+#editRideForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.edit-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.edit-form-grid .field,
+#editRideForm > .field {
+  min-width: 0;
+}
+
+.edit-modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.edit-modal-actions button {
+  min-width: 0;
+}
+
+.edit-modal-actions .secondary-btn {
+  background: #e5e7eb;
+  color: #1f2937;
+}
+
+@media (max-width: 420px) {
+  .edit-form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-modal-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .edit-modal-content {
+    padding: 14px;
+  }
+}
