@@ -383,6 +383,9 @@ function updateFormColor() {
   const color = lineColors[lineEl.value];
   const form = document.querySelector(".form");
 
+  // Keep the selected line color available to the form's top accent,
+  // including where the refreshed stylesheet uses !important.
+  form.style.setProperty("--form-line-color", color);
   form.style.border = `2px solid ${color}`;
   form.style.boxShadow = `
     0 0 10px ${color}55,
