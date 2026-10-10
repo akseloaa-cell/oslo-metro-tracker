@@ -461,7 +461,6 @@ function renderCarOverview() {
     return;
   }
 
-  const maxCount = sortedCars[0].count;
   sortedCars.forEach((car, index) => {
     const card = document.createElement("article");
     card.className = "car-rank-card";
