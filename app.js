@@ -18,6 +18,9 @@ const uniqueCarsEl = document.getElementById("uniqueCars");
 
 const pokedexEl = document.getElementById("pokedex");
 const carOverviewEl = document.getElementById("carOverview");
+const carOverviewIntroEl = document.getElementById("carOverviewIntro");
+const toggleCarSortBtn = document.getElementById("btnToggleCarSort");
+let carOverviewSortMode = "count";
 
 const modalEl = document.getElementById("carModal");
 const modalTitleEl = document.getElementById("modalTitle");
@@ -72,6 +75,11 @@ document.addEventListener("keydown", event => {
 
 document.getElementById("btnCarOverview").addEventListener("click", () => {
   showView("carOverviewView");
+});
+
+toggleCarSortBtn.addEventListener("click", () => {
+  carOverviewSortMode = carOverviewSortMode === "count" ? "duration" : "count";
+  renderCarOverview();
 });
 
 document.getElementById("btnHomeFromCarOverview").addEventListener("click", () => {
@@ -447,9 +455,28 @@ function renderCarOverview() {
     counts.set(carNumber, current);
   });
 
-  const sortedCars = Array.from(counts.values()).sort((a, b) =>
-    b.count - a.count || a.carNumber.localeCompare(b.carNumber, "no", { numeric: true })
-  );
+  const cars = Array.from(counts.values()).map(car => ({
+    ...car,
+    totalMinutes: Object.values(car.lineMinutes).reduce((sum, minutes) => sum + minutes, 0)
+  }));
+
+  const sortedCars = cars.sort((a, b) => {
+    const primaryDifference = carOverviewSortMode === "duration"
+      ? b.totalMinutes - a.totalMinutes
+      : b.count - a.count;
+
+    return primaryDifference || a.carNumber.localeCompare(b.carNumber, "no", { numeric: true });
+  });
+
+  carOverviewIntroEl.textContent = carOverviewSortMode === "duration"
+    ? "Vognene er sortert etter samlet registrert kjøretid, fra lengst til kortest."
+    : "Vognene er sortert etter antall registrerte turer, fra flest til færrest.";
+  toggleCarSortBtn.textContent = carOverviewSortMode === "duration"
+    ? "🔁 Sorter etter antall turer"
+    : "🔁 Sorter etter kjøretid";
+  toggleCarSortBtn.setAttribute("aria-label", carOverviewSortMode === "duration"
+    ? "Bytt sortering til antall registrerte turer"
+    : "Bytt sortering til samlet kjøretid");
 
   const summary = document.createElement("div");
   summary.className = "car-overview-summary";
@@ -478,7 +505,7 @@ function renderCarOverview() {
     const title = document.createElement("strong");
     title.textContent = `🚃 Vogn ${car.carNumber}`;
 
-    const totalMinutes = Object.values(car.lineMinutes).reduce((sum, minutes) => sum + minutes, 0);
+    const totalMinutes = car.totalMinutes;
     const meta = document.createElement("div");
     meta.className = "car-rank-meta";
     meta.textContent = `${formatMinutes(totalMinutes)} total kjøretid · ${car.count} ${car.count === 1 ? "tur" : "turer"}`;
