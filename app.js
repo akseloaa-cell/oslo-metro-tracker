@@ -11,7 +11,6 @@ const endTimeEl = document.getElementById("endTime");
 const carNumberEl = document.getElementById("carNumber");
 
 const addBtn = document.getElementById("addBtn");
-const exportRidesBtn = document.getElementById("exportRidesBtn");
 const listEl = document.getElementById("list");
 
 const totalRidesEl = document.getElementById("totalRides");
@@ -112,30 +111,6 @@ lineEl.addEventListener("change", () => {
   updateFormColor();
 });
 
-exportRidesBtn.addEventListener("click", exportRides);
-
-function exportRides() {
-  try {
-    const backup = {
-      format: "oslo-metro-tracker-backup",
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      rides
-    };
-    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `oslo-metro-tracker-backup-${new Date().toLocaleDateString("sv-SE")}.json`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
-  } catch (error) {
-    console.error("Kunne ikke eksportere turene:", error);
-    alert("Sikkerhetskopien kunne ikke opprettes.");
-  }
-}
 
 addBtn.addEventListener("click", () => {
   if (!carNumberEl.value.trim()) {
