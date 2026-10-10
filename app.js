@@ -134,7 +134,10 @@ addBtn.addEventListener("click", () => {
   };
 
   rides.unshift(ride);
-  saveRides();
+  if (!saveRides()) {
+    rides.shift();
+    return;
+  }
 
   render();
 
