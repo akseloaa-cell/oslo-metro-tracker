@@ -17,6 +17,7 @@ const totalRidesEl = document.getElementById("totalRides");
 const uniqueCarsEl = document.getElementById("uniqueCars");
 
 const pokedexEl = document.getElementById("pokedex");
+const carOverviewEl = document.getElementById("carOverview");
 
 const modalEl = document.getElementById("carModal");
 const modalTitleEl = document.getElementById("modalTitle");
@@ -69,6 +70,18 @@ document.addEventListener("keydown", event => {
   }
 });
 
+document.getElementById("btnCarOverview").addEventListener("click", () => {
+  showView("carOverviewView");
+});
+
+document.getElementById("btnHomeFromCarOverview").addEventListener("click", () => {
+  showView("homeView");
+});
+
+document.getElementById("btnPokedexFromCarOverview").addEventListener("click", () => {
+  showView("pokedexView");
+});
+
 document.getElementById("btnHeatmap")
   .addEventListener("click", () => {
     showView("heatmapView");
@@ -95,6 +108,7 @@ const lineColors = {
 /* ================= VIEWS ================= */
 const homeView = document.getElementById("homeView");
 const pokedexView = document.getElementById("pokedexView");
+const carOverviewView = document.getElementById("carOverviewView");
 
 /* ================= STATE ================= */
 let rides = JSON.parse(localStorage.getItem("rides")) || [];
@@ -385,6 +399,10 @@ if (viewId === "pokedexView") {
   renderPokedex();
 }
 
+if (viewId === "carOverviewView") {
+  renderCarOverview();
+}
+
 if (viewId === "heatmapView") {
   renderHeatmap();
 }
@@ -397,6 +415,74 @@ document.getElementById("btnPokedex").addEventListener("click", () => {
 document.getElementById("btnHome").addEventListener("click", () => {
   showView("homeView");
 });
+
+document.getElementById("btnCarOverviewFromPokedex").addEventListener("click", () => {
+  showView("carOverviewView");
+});
+
+/* ================= VOGNSTATISTIKK ================= */
+function renderCarOverview() {
+  carOverviewEl.replaceChildren();
+
+  const counts = new Map();
+  rides.forEach(ride => {
+    const carNumber = String(ride.carNumber ?? "").trim();
+    if (!carNumber) return;
+    const current = counts.get(carNumber) || { carNumber, count: 0, lines: new Set() };
+    current.count++;
+    if (ride.line != null && String(ride.line).trim()) current.lines.add(String(ride.line));
+    counts.set(carNumber, current);
+  });
+
+  const sortedCars = Array.from(counts.values()).sort((a, b) =>
+    b.count - a.count || a.carNumber.localeCompare(b.carNumber, "no", { numeric: true })
+  );
+
+  const summary = document.createElement("div");
+  summary.className = "car-overview-summary";
+  summary.textContent = `${sortedCars.length} ulike vogner · ${rides.length} registrerte turer`;
+  carOverviewEl.appendChild(summary);
+
+  if (sortedCars.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "car-overview-empty";
+    empty.textContent = "Du har ikke registrert noen turer ennå. Når du lagrer turer, vises vognene du har kjørt mest med her.";
+    carOverviewEl.appendChild(empty);
+    return;
+  }
+
+  const maxCount = sortedCars[0].count;
+  sortedCars.forEach((car, index) => {
+    const card = document.createElement("article");
+    card.className = "car-rank-card";
+
+    const rank = document.createElement("div");
+    rank.className = "car-rank-number";
+    rank.textContent = String(index + 1);
+
+    const details = document.createElement("div");
+    details.className = "car-rank-details";
+
+    const title = document.createElement("strong");
+    title.textContent = `🚃 Vogn ${car.carNumber}`;
+
+    const meta = document.createElement("div");
+    meta.className = "car-rank-meta";
+    meta.textContent = `${car.count} ${car.count === 1 ? "tur" : "turer"}${car.lines.size ? " · Linje " + Array.from(car.lines).sort((a,b) => a.localeCompare(b, "no", {numeric:true})).join(", ") : ""}`;
+
+    const track = document.createElement("div");
+    track.className = "car-rank-track";
+    track.setAttribute("aria-label", `${car.count} turer`);
+    const bar = document.createElement("div");
+    bar.className = "car-rank-bar";
+    bar.style.width = `${(car.count / maxCount) * 100}%`;
+    track.appendChild(bar);
+
+    details.append(title, meta, track);
+    card.append(rank, details);
+    carOverviewEl.appendChild(card);
+  });
+}
 
 /* ================= POKÉDEX ================= */
 function buildPokedex() {
