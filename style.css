@@ -446,3 +446,27 @@ text {
   line-height: 1.5;
   box-shadow: 0 2px 10px rgba(0,0,0,0.06);
 }
+
+
+.car-rank-line-times {
+  display: grid;
+  gap: 5px;
+  margin-top: 8px;
+}
+.car-rank-line-time {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  color: #4b5563;
+}
+.car-rank-line-label {
+  border-left: 3px solid #1f2a44;
+  padding-left: 7px;
+}
+.car-rank-line-time strong {
+  color: #1f2937;
+  font-size: 12px;
+  white-space: nowrap;
+}
