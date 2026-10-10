@@ -1013,3 +1013,9 @@ input:focus {
     animation-duration: 0.01ms !important;
   }
 }
+
+
+/* Keep the ride form's top accent synchronized with the selected metro line. */
+.form {
+  border-top: 4px solid var(--form-line-color, var(--brand)) !important;
+}
