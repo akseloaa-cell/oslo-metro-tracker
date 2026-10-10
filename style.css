@@ -1018,5 +1018,5 @@ input:focus {
 /* The inline border color is set by updateFormColor() for the selected line.
    Avoid !important here so that line-specific styling remains visible. */
 .form {
-  border-top: 4px solid var(--brand);
+  border-top: 4px solid var(--form-line-color, var(--brand)) !important;
 }
