@@ -428,9 +428,19 @@ function renderCarOverview() {
   rides.forEach(ride => {
     const carNumber = String(ride.carNumber ?? "").trim();
     if (!carNumber) return;
-    const current = counts.get(carNumber) || { carNumber, count: 0, lines: new Set() };
+    const current = counts.get(carNumber) || { carNumber, count: 0, lines: new Set(), lineMinutes: {} };
     current.count++;
-    if (ride.line != null && String(ride.line).trim()) current.lines.add(String(ride.line));
+    if (ride.line != null && String(ride.line).trim()) {
+      const line = String(ride.line);
+      current.lines.add(line);
+
+      let duration = 0;
+      if (ride.startTime && ride.endTime) {
+        duration = (new Date(ride.endTime) - new Date(ride.startTime)) / 60000;
+        if (!Number.isFinite(duration) || duration < 0) duration = 0;
+      }
+      current.lineMinutes[line] = (current.lineMinutes[line] || 0) + duration;
+    }
     counts.set(carNumber, current);
   });
 
@@ -468,7 +478,26 @@ function renderCarOverview() {
 
     const meta = document.createElement("div");
     meta.className = "car-rank-meta";
-    meta.textContent = `${car.count} ${car.count === 1 ? "tur" : "turer"}${car.lines.size ? " · Linje " + Array.from(car.lines).sort((a,b) => a.localeCompare(b, "no", {numeric:true})).join(", ") : ""}`;
+    meta.textContent = `${car.count} ${car.count === 1 ? "tur" : "turer"}`;
+
+    const lineTimes = document.createElement("div");
+    lineTimes.className = "car-rank-line-times";
+    const sortedLines = Array.from(car.lines).sort((a, b) => a.localeCompare(b, "no", { numeric: true }));
+    sortedLines.forEach(line => {
+      const lineRow = document.createElement("div");
+      lineRow.className = "car-rank-line-time";
+
+      const lineLabel = document.createElement("span");
+      lineLabel.className = "car-rank-line-label";
+      lineLabel.textContent = `Linje ${line}`;
+      lineLabel.style.borderLeftColor = lineColors[line] || "#1f2a44";
+
+      const lineDuration = document.createElement("strong");
+      lineDuration.textContent = formatMinutes(car.lineMinutes[line] || 0);
+
+      lineRow.append(lineLabel, lineDuration);
+      lineTimes.appendChild(lineRow);
+    });
 
     const track = document.createElement("div");
     track.className = "car-rank-track";
@@ -478,7 +507,7 @@ function renderCarOverview() {
     bar.style.width = `${(car.count / maxCount) * 100}%`;
     track.appendChild(bar);
 
-    details.append(title, meta, track);
+    details.append(title, meta, lineTimes, track);
     card.append(rank, details);
     carOverviewEl.appendChild(card);
   });
