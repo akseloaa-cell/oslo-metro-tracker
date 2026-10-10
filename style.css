@@ -374,3 +374,75 @@ text {
     padding: 14px;
   }
 }
+
+
+/* =========================
+   VOGNSTATISTIKK
+========================= */
+.overview-intro {
+  color: #5b6472;
+  font-size: 14px;
+  margin: -4px 0 4px;
+}
+.car-overview-summary {
+  color: #5b6472;
+  font-size: 13px;
+  margin: 0 0 2px;
+}
+.car-rank-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+.car-rank-number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: #edf0f5;
+  color: #1f2a44;
+  font-weight: 750;
+}
+.car-rank-details {
+  min-width: 0;
+  flex: 1;
+}
+.car-rank-details strong {
+  display: block;
+  font-size: 15px;
+}
+.car-rank-meta {
+  color: #667085;
+  font-size: 12px;
+  margin-top: 3px;
+}
+.car-rank-track {
+  height: 7px;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #edf0f5;
+  margin-top: 9px;
+}
+.car-rank-bar {
+  height: 100%;
+  min-width: 4px;
+  border-radius: inherit;
+  background: #1f2a44;
+  transition: width 0.2s ease;
+}
+.car-overview-empty {
+  background: white;
+  color: #667085;
+  padding: 18px;
+  border-radius: 16px;
+  line-height: 1.5;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
