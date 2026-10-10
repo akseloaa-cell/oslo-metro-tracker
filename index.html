@@ -125,6 +125,55 @@
 
 </div>
   
+  <div id="editRideModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="editRideTitle">
+    <div class="modal-content edit-modal-content">
+      <h2 id="editRideTitle">✏️ Rediger tur</h2>
+      <p class="edit-help">Endre opplysningene nedenfor og lagre når du er ferdig.</p>
+      <form id="editRideForm">
+        <div class="field">
+          <label for="editLine">Linje</label>
+          <select id="editLine" required>
+            <option value="1">Linje 1</option>
+            <option value="2">Linje 2</option>
+            <option value="3">Linje 3</option>
+            <option value="4">Linje 4</option>
+            <option value="5">Linje 5</option>
+          </select>
+        </div>
+        <div class="edit-form-grid">
+          <div class="field">
+            <label for="editStartStation">Startstopp</label>
+            <select id="editStartStation" required></select>
+          </div>
+          <div class="field">
+            <label for="editEndStation">Endestopp</label>
+            <select id="editEndStation" required></select>
+          </div>
+          <div class="field">
+            <label for="editDate">Dato</label>
+            <input id="editDate" type="date" required />
+          </div>
+          <div class="field">
+            <label for="editCarNumber">Vognnummer</label>
+            <input id="editCarNumber" type="number" min="1" step="1" required />
+          </div>
+          <div class="field">
+            <label for="editStartTime">Starttid</label>
+            <input id="editStartTime" type="time" required />
+          </div>
+          <div class="field">
+            <label for="editEndTime">Sluttid</label>
+            <input id="editEndTime" type="time" required />
+          </div>
+        </div>
+        <div class="edit-modal-actions">
+          <button id="cancelEditRide" type="button" class="secondary-btn">Avbryt</button>
+          <button type="submit">Lagre endringer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <div id="carModal" class="modal">
   <div class="modal-content">
     <button id="closeModal">✕</button>
