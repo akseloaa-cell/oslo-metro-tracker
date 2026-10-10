@@ -25,6 +25,19 @@ const modalStatsEl = document.getElementById("modalStats");
 const modalRidesEl = document.getElementById("modalRides");
 const closeModalBtn = document.getElementById("closeModal");
 
+// Redigeringsvindu for en eksisterende tur
+const editModalEl = document.getElementById("editRideModal");
+const editRideFormEl = document.getElementById("editRideForm");
+const editLineEl = document.getElementById("editLine");
+const editStartStationEl = document.getElementById("editStartStation");
+const editEndStationEl = document.getElementById("editEndStation");
+const editDateEl = document.getElementById("editDate");
+const editStartTimeEl = document.getElementById("editStartTime");
+const editEndTimeEl = document.getElementById("editEndTime");
+const editCarNumberEl = document.getElementById("editCarNumber");
+const cancelEditBtn = document.getElementById("cancelEditRide");
+let editingRideId = null;
+
 const metroMapObj = document.getElementById("metroMap");
 
 metroMapObj.addEventListener("load", () => {
@@ -39,6 +52,22 @@ const heatmapStatsEl =
 
 closeModalBtn.addEventListener("click", () => {
   modalEl.classList.remove("open");
+});
+
+cancelEditBtn.addEventListener("click", closeEditRide);
+editLineEl.addEventListener("change", () => {
+  populateEditStations(editLineEl.value);
+});
+editRideFormEl.addEventListener("submit", saveEditedRide);
+
+editModalEl.addEventListener("click", event => {
+  if (event.target === editModalEl) closeEditRide();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape" && editModalEl.classList.contains("open")) {
+    closeEditRide();
+  }
 });
 
 document.getElementById("btnHeatmap")
@@ -247,31 +276,97 @@ function editRide(id) {
   const ride = rides.find(r => r.id === id);
   if (!ride) return;
 
-  // Avbryt hele redigeringen dersom en prompt avbrytes.
-  const newCar = prompt("Vognnummer:", ride.carNumber);
-  if (newCar === null) return;
-  const newStart = prompt("Startstopp:", ride.startStation);
-  if (newStart === null) return;
-  const newEnd = prompt("Endestopp:", ride.endStation);
-  if (newEnd === null) return;
+  editingRideId = id;
+  editLineEl.value = String(ride.line || "1");
+  populateEditStations(editLineEl.value);
 
-  const car = newCar.trim();
-  const start = newStart.trim();
-  const end = newEnd.trim();
-  if (!car || !start || !end) {
-    alert("Vognnummer, startstopp og endestopp kan ikke være tomme.");
+  editStartStationEl.value = ride.startStation || "";
+  editEndStationEl.value = ride.endStation || "";
+  editDateEl.value = (ride.startTime || ride.endTime || "").split("T")[0] || "";
+  editStartTimeEl.value = (ride.startTime || "").split("T")[1] || "";
+  editEndTimeEl.value = (ride.endTime || "").split("T")[1] || "";
+  editCarNumberEl.value = ride.carNumber ?? "";
+
+  editModalEl.classList.add("open");
+  editCarNumberEl.focus();
+}
+
+function populateEditStations(line) {
+  const stations = metroLines[line] || [];
+  const previousStart = editStartStationEl.value;
+  const previousEnd = editEndStationEl.value;
+
+  editStartStationEl.replaceChildren();
+  editEndStationEl.replaceChildren();
+
+  stations.forEach(station => {
+    for (const select of [editStartStationEl, editEndStationEl]) {
+      const option = document.createElement("option");
+      option.value = station;
+      option.textContent = station;
+      select.appendChild(option);
+    }
+  });
+
+  if (stations.includes(previousStart)) editStartStationEl.value = previousStart;
+  if (stations.includes(previousEnd)) editEndStationEl.value = previousEnd;
+}
+
+function closeEditRide() {
+  editModalEl.classList.remove("open");
+  editRideFormEl.reset();
+  editingRideId = null;
+}
+
+function saveEditedRide(event) {
+  event.preventDefault();
+  if (!editingRideId) return;
+
+  const ride = rides.find(r => r.id === editingRideId);
+  if (!ride) {
+    closeEditRide();
     return;
   }
 
-  const previous = { carNumber: ride.carNumber, startStation: ride.startStation, endStation: ride.endStation };
-  ride.carNumber = car;
-  ride.startStation = start;
-  ride.endStation = end;
+  const car = editCarNumberEl.value.trim();
+  const start = editStartStationEl.value;
+  const end = editEndStationEl.value;
+  const line = editLineEl.value;
+  const date = editDateEl.value;
+  const startTime = editStartTimeEl.value;
+  const endTime = editEndTimeEl.value;
+
+  if (!car || !start || !end || !date || !startTime || !endTime) {
+    alert("Fyll ut alle feltene før du lagrer.");
+    return;
+  }
+
+  if (start === end) {
+    alert("Startstopp og endestopp kan ikke være det samme.");
+    return;
+  }
+
+  if (!metroLines[line]?.includes(start) || !metroLines[line]?.includes(end)) {
+    alert("Velg start- og endestopp som hører til den valgte linjen.");
+    return;
+  }
+
+  const previous = { ...ride };
+  Object.assign(ride, {
+    line,
+    startStation: start,
+    endStation: end,
+    carNumber: car,
+    startTime: `${date}T${startTime}`,
+    endTime: `${date}T${endTime}`
+  });
 
   if (!saveRides()) {
     Object.assign(ride, previous);
     return;
   }
+
+  closeEditRide();
   render();
 }
 /* ================= STATIONS ================= */
