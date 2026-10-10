@@ -470,3 +470,17 @@ text {
   font-size: 12px;
   white-space: nowrap;
 }
+
+
+.car-rank-card-clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.car-rank-card-clickable:hover,
+.car-rank-card-clickable:focus-visible {
+  outline: 2px solid #cbd5e1;
+  outline-offset: 2px;
+}
+.car-rank-card-clickable:active {
+  transform: scale(0.99);
+}
