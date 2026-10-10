@@ -1020,3 +1020,23 @@ input:focus {
 .form {
   border-top: 4px solid var(--form-line-color, var(--brand)) !important;
 }
+
+
+/* Vognstatistikk: tydelig knapp for å bytte sorteringsgrunnlag */
+.sort-toggle-btn {
+  align-self: flex-start;
+  margin: 2px 0 8px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 700;
+  box-shadow: var(--shadow-card);
+}
+
+.sort-toggle-btn:hover,
+.sort-toggle-btn:focus-visible {
+  outline: 2px solid rgba(2, 156, 218, 0.42);
+  outline-offset: 2px;
+}
