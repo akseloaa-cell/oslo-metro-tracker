@@ -11,6 +11,7 @@ const endTimeEl = document.getElementById("endTime");
 const carNumberEl = document.getElementById("carNumber");
 
 const addBtn = document.getElementById("addBtn");
+const exportRidesBtn = document.getElementById("exportRidesBtn");
 const listEl = document.getElementById("list");
 
 const totalRidesEl = document.getElementById("totalRides");
@@ -27,8 +28,10 @@ const closeModalBtn = document.getElementById("closeModal");
 const metroMapObj = document.getElementById("metroMap");
 
 metroMapObj.addEventListener("load", () => {
-  const svgDoc = metroMapObj.contentDocument;
-  window.svgDoc = svgDoc; // gjør den tilgjengelig globalt
+  // SVG-innholdet lastes asynkront. Oppdater heatmap når det faktisk er klart.
+  if (metroMapObj.contentDocument) {
+    renderHeatmapToSVG();
+  }
 });
 
 const heatmapStatsEl =
@@ -80,13 +83,44 @@ lineEl.addEventListener("change", () => {
   updateFormColor();
 });
 
+exportRidesBtn.addEventListener("click", exportRides);
+
+function exportRides() {
+  try {
+    const backup = {
+      format: "oslo-metro-tracker-backup",
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      rides
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `oslo-metro-tracker-backup-${new Date().toLocaleDateString("sv-SE")}.json`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Kunne ikke eksportere turene:", error);
+    alert("Sikkerhetskopien kunne ikke opprettes.");
+  }
+}
+
 addBtn.addEventListener("click", () => {
   if (!carNumberEl.value.trim()) {
     alert("Skriv inn et vognnummer.");
     return;
   }
 
-  const today = new Date().toISOString().split("T")[0];
+  // Bruk lokal kalenderdato, ikke UTC (som kan gi feil dato sent på kvelden).
+  const now = new Date();
+  const today = [
+    now.getFullYear(),
+    String(now.getMonth() + 1).padStart(2, "0"),
+    String(now.getDate()).padStart(2, "0")
+  ].join("-");
 
   const ride = {
     id: crypto.randomUUID(),
@@ -100,7 +134,7 @@ addBtn.addEventListener("click", () => {
   };
 
   rides.unshift(ride);
-  localStorage.setItem("rides", JSON.stringify(rides));
+  saveRides();
 
   render();
 
@@ -184,9 +218,25 @@ function render() {
   });
 }
 
+function saveRides() {
+  try {
+    // Behold den eksisterende lagringsnøkkelen og datastrukturen.
+    localStorage.setItem("rides", JSON.stringify(rides));
+    return true;
+  } catch (error) {
+    console.error("Kunne ikke lagre turene:", error);
+    alert("Turene kunne ikke lagres. Sjekk lagringsplassen i nettleseren. Ikke lukk eller oppdater siden før du har eksportert en sikkerhetskopi hvis turene fortsatt vises.");
+    return false;
+  }
+}
+
 function deleteRide(id) {
+  const previousRides = rides;
   rides = rides.filter(r => r.id !== id);
-  localStorage.setItem("rides", JSON.stringify(rides));
+  if (!saveRides()) {
+    rides = previousRides;
+    return;
+  }
   render();
 }
 
@@ -194,17 +244,31 @@ function editRide(id) {
   const ride = rides.find(r => r.id === id);
   if (!ride) return;
 
+  // Avbryt hele redigeringen dersom en prompt avbrytes.
   const newCar = prompt("Vognnummer:", ride.carNumber);
-  if (!newCar) return;
-
+  if (newCar === null) return;
   const newStart = prompt("Startstopp:", ride.startStation);
+  if (newStart === null) return;
   const newEnd = prompt("Endestopp:", ride.endStation);
+  if (newEnd === null) return;
 
-  ride.carNumber = newCar;
-  ride.startStation = newStart;
-  ride.endStation = newEnd;
+  const car = newCar.trim();
+  const start = newStart.trim();
+  const end = newEnd.trim();
+  if (!car || !start || !end) {
+    alert("Vognnummer, startstopp og endestopp kan ikke være tomme.");
+    return;
+  }
 
-  localStorage.setItem("rides", JSON.stringify(rides));
+  const previous = { carNumber: ride.carNumber, startStation: ride.startStation, endStation: ride.endStation };
+  ride.carNumber = car;
+  ride.startStation = start;
+  ride.endStation = end;
+
+  if (!saveRides()) {
+    Object.assign(ride, previous);
+    return;
+  }
   render();
 }
 /* ================= STATIONS ================= */
@@ -475,6 +539,10 @@ Object.entries(lineMinutes).forEach(([line, mins]) => {
   modalEl.classList.add("open");
 }
 
+function renderHeatmap() {
+  renderHeatmapToSVG();
+}
+
 function renderHeatmapToSVG() {
   const svgDoc = document.getElementById("metroMap").contentDocument;
   if (!svgDoc) return;
@@ -493,4 +561,8 @@ function renderHeatmapToSVG() {
       el.style.fill = `rgba(169, 100, 163, ${Math.min(count / 10, 1)})`;
     }
   });
+
+  if (heatmapStatsEl) {
+    heatmapStatsEl.textContent = `${Object.keys(visited).length} ulike stopp besøkt · ${rides.length} registrerte turer`;
+  }
 }
