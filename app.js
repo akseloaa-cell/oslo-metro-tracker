@@ -476,38 +476,33 @@ function renderCarOverview() {
     const title = document.createElement("strong");
     title.textContent = `🚃 Vogn ${car.carNumber}`;
 
+    const totalMinutes = Object.values(car.lineMinutes).reduce((sum, minutes) => sum + minutes, 0);
     const meta = document.createElement("div");
     meta.className = "car-rank-meta";
-    meta.textContent = `${car.count} ${car.count === 1 ? "tur" : "turer"}`;
-
-    const lineTimes = document.createElement("div");
-    lineTimes.className = "car-rank-line-times";
-    const sortedLines = Array.from(car.lines).sort((a, b) => a.localeCompare(b, "no", { numeric: true }));
-    sortedLines.forEach(line => {
-      const lineRow = document.createElement("div");
-      lineRow.className = "car-rank-line-time";
-
-      const lineLabel = document.createElement("span");
-      lineLabel.className = "car-rank-line-label";
-      lineLabel.textContent = `Linje ${line}`;
-      lineLabel.style.borderLeftColor = lineColors[line] || "#1f2a44";
-
-      const lineDuration = document.createElement("strong");
-      lineDuration.textContent = formatMinutes(car.lineMinutes[line] || 0);
-
-      lineRow.append(lineLabel, lineDuration);
-      lineTimes.appendChild(lineRow);
-    });
+    meta.textContent = `${formatMinutes(totalMinutes)} total kjøretid · ${car.count} ${car.count === 1 ? "tur" : "turer"}`;
 
     const track = document.createElement("div");
     track.className = "car-rank-track";
-    track.setAttribute("aria-label", `${car.count} turer`);
+    track.setAttribute("aria-label", `Kjøretid per linje: ${Array.from(car.lines).sort((a, b) => a.localeCompare(b, "no", { numeric: true })).map(line => `linje ${line}: ${formatMinutes(car.lineMinutes[line] || 0)}`).join(", ")}`);
     const bar = document.createElement("div");
     bar.className = "car-rank-bar";
-    bar.style.width = `${(car.count / maxCount) * 100}%`;
+    bar.style.width = totalMinutes > 0 ? "100%" : "0%";
+    bar.style.background = getLineGradient(car.lineMinutes, "to right");
     track.appendChild(bar);
 
-    details.append(title, meta, lineTimes, track);
+    card.classList.add("car-rank-card-clickable");
+    card.setAttribute("role", "button");
+    card.setAttribute("tabindex", "0");
+    card.setAttribute("aria-label", `Vis detaljer for vogn ${car.carNumber}`);
+    card.addEventListener("click", () => openCarDetail(car.carNumber));
+    card.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openCarDetail(car.carNumber);
+      }
+    });
+
+    details.append(title, meta, track);
     card.append(rank, details);
     carOverviewEl.appendChild(card);
   });
@@ -560,7 +555,7 @@ function buildPokedex() {
   return Array.from(map.values());
 }
 
-function getLineGradient(lineMinutes) {
+function getLineGradient(lineMinutes, direction = "to bottom") {
   const total =
     Object.values(lineMinutes)
       .reduce((sum, mins) => sum + mins, 0);
@@ -581,7 +576,7 @@ function getLineGradient(lineMinutes) {
     start = end;
   }
 
-  return `linear-gradient(to bottom, ${parts.join(", ")})`;
+  return `linear-gradient(${direction}, ${parts.join(", ")})`;
 }
 
 function formatMinutes(minutes) {
