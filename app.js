@@ -439,11 +439,18 @@ function renderCarOverview() {
   rides.forEach(ride => {
     const carNumber = String(ride.carNumber ?? "").trim();
     if (!carNumber) return;
-    const current = counts.get(carNumber) || { carNumber, count: 0, lines: new Set(), lineMinutes: {} };
+    const current = counts.get(carNumber) || {
+      carNumber,
+      count: 0,
+      lines: new Set(),
+      lineCounts: {},
+      lineMinutes: {}
+    };
     current.count++;
     if (ride.line != null && String(ride.line).trim()) {
       const line = String(ride.line);
       current.lines.add(line);
+      current.lineCounts[line] = (current.lineCounts[line] || 0) + 1;
 
       let duration = 0;
       if (ride.startTime && ride.endTime) {
@@ -460,13 +467,14 @@ function renderCarOverview() {
     totalMinutes: Object.values(car.lineMinutes).reduce((sum, minutes) => sum + minutes, 0)
   }));
 
-  const sortedCars = cars.sort((a, b) => {
-    const primaryDifference = carOverviewSortMode === "duration"
-      ? b.totalMinutes - a.totalMinutes
-      : b.count - a.count;
+  const metricForCar = car => carOverviewSortMode === "duration" ? car.totalMinutes : car.count;
 
+  const sortedCars = cars.sort((a, b) => {
+    const primaryDifference = metricForCar(b) - metricForCar(a);
     return primaryDifference || a.carNumber.localeCompare(b.carNumber, "no", { numeric: true });
   });
+
+  const maxMetric = Math.max(0, ...sortedCars.map(metricForCar));
 
   carOverviewIntroEl.textContent = carOverviewSortMode === "duration"
     ? "Vognene er sortert etter samlet registrert kjøretid, fra lengst til kortest."
@@ -512,11 +520,21 @@ function renderCarOverview() {
 
     const track = document.createElement("div");
     track.className = "car-rank-track";
-    track.setAttribute("aria-label", `Kjøretid per linje: ${Array.from(car.lines).sort((a, b) => a.localeCompare(b, "no", { numeric: true })).map(line => `linje ${line}: ${formatMinutes(car.lineMinutes[line] || 0)}`).join(", ")}`);
+    const isDurationSort = carOverviewSortMode === "duration";
+    const lineValues = isDurationSort ? car.lineMinutes : car.lineCounts;
+    const lineDescription = Array.from(car.lines)
+      .sort((a, b) => a.localeCompare(b, "no", { numeric: true }))
+      .map(line => isDurationSort
+        ? `linje ${line}: ${formatMinutes(car.lineMinutes[line] || 0)}`
+        : `linje ${line}: ${car.lineCounts[line] || 0} ${(car.lineCounts[line] || 0) === 1 ? "tur" : "turer"}`)
+      .join(", ");
+    track.setAttribute("aria-label", `${isDurationSort ? "Kjøretid" : "Antall turer"} fordelt på linjer: ${lineDescription}`);
+
     const bar = document.createElement("div");
     bar.className = "car-rank-bar";
-    bar.style.width = totalMinutes > 0 ? "100%" : "0%";
-    bar.style.background = getLineGradient(car.lineMinutes, "to right");
+    const metric = metricForCar(car);
+    bar.style.width = maxMetric > 0 ? `${(metric / maxMetric) * 100}%` : "0%";
+    bar.style.background = getLineGradient(lineValues, "to right");
     track.appendChild(bar);
 
     card.classList.add("car-rank-card-clickable");
