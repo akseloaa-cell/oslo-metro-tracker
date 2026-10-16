@@ -363,8 +363,15 @@ function saveEditedRide(event) {
     return;
   }
 
+  const shouldRefreshCarDetail = modalEl.classList.contains("open");
   closeEditRide();
   render();
+
+  // If the edit started from a car's Pokédex details, keep that detail view
+  // open and refresh it using the ride's possibly updated car number.
+  if (shouldRefreshCarDetail) {
+    openCarDetail(ride.carNumber);
+  }
 }
 /* ================= STATIONS ================= */
 function populateStations(line) {
@@ -761,7 +768,15 @@ Object.entries(lineMinutes).forEach(([line, mins]) => {
         ⏰ ${startTime} - ${endTime}<br/>
 
         📅 ${date}
+        <div class="ride-actions">
+          <button class="edit-btn" type="button" aria-label="Rediger denne turen">✏️ Rediger</button>
+        </div>
       `;
+
+      div.querySelector(".edit-btn").addEventListener("click", event => {
+        event.stopPropagation();
+        editRide(r.id);
+      });
 
       modalRidesEl.appendChild(div);
     });
