@@ -1040,3 +1040,9 @@ input:focus {
   outline: 2px solid rgba(2, 156, 218, 0.42);
   outline-offset: 2px;
 }
+
+
+/* Keep the ride-edit dialog above the car-detail dialog when editing from Pokédex. */
+#editRideModal {
+  z-index: 1001;
+}
