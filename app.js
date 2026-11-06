@@ -42,16 +42,9 @@ const cancelEditBtn = document.getElementById("cancelEditRide");
 let editingRideId = null;
 
 const metroMapObj = document.getElementById("metroMap");
-
-metroMapObj.addEventListener("load", () => {
-  // SVG-innholdet lastes asynkront. Oppdater heatmap når det faktisk er klart.
-  if (metroMapObj.contentDocument) {
-    renderHeatmapToSVG();
-  }
-});
-
-const heatmapStatsEl =
-  document.getElementById("heatmapStats");
+const heatmapStatsEl = document.getElementById("heatmapStats");
+const stationDetailsEl = document.getElementById("stationDetails");
+let selectedHeatmapStation = null;
 
 closeModalBtn.addEventListener("click", () => {
   modalEl.classList.remove("open");
@@ -784,30 +777,145 @@ Object.entries(lineMinutes).forEach(([line, mins]) => {
   modalEl.classList.add("open");
 }
 
-function renderHeatmap() {
-  renderHeatmapToSVG();
-}
-
-function renderHeatmapToSVG() {
-  const svgDoc = document.getElementById("metroMap").contentDocument;
-  if (!svgDoc) return;
-
-  const visited = {};
-
-  rides.forEach(r => {
-    visited[r.startStation] = (visited[r.startStation] || 0) + 1;
-    visited[r.endStation] = (visited[r.endStation] || 0) + 1;
-  });
-
-  Object.entries(visited).forEach(([station, count]) => {
-    const el = svgDoc.getElementById(station);
-
-    if (el) {
-      el.style.fill = `rgba(169, 100, 163, ${Math.min(count / 10, 1)})`;
-    }
-  });
-
-  if (heatmapStatsEl) {
-    heatmapStatsEl.textContent = `${Object.keys(visited).length} ulike stopp besøkt · ${rides.length} registrerte turer`;
+// Originalt, interaktivt linjekart inspirert av Ruters skjematiske nettverkskart.
+// Koordinatene er skjematiske, ikke geografiske.
+const svgNS = "http://www.w3.org/2000/svg";
+const mapStations = new Map();
+const mapBranches = [
+  {line:"1", from:"Frognerseteren", to:"Frøen", start:[80,95], end:[880,570]},
+  {line:"2", from:"Østerås", to:"Borgen", start:[80,420], end:[880,620]},
+  {line:"3", from:"Kolsås", to:"Borgen", start:[80,790], end:[880,620]},
+  {line:"4", from:"Vestli", to:"Blindern", start:[2460,90], end:[880,490]},
+  {line:"5", from:"Vestli", to:"Tøyen", start:[2460,90], end:[1500,620]},
+  {line:"5", from:"Blindern", to:"Sognsvann", start:[880,490], end:[530,90]},
+  {line:"1", from:"Brynseng", to:"Bergkrystallen", start:[1800,680], end:[2460,1060]},
+  {line:"2", from:"Hellerud", to:"Ellingsrudåsen", start:[1900,620], end:[2460,420]},
+  {line:"3", from:"Hellerud", to:"Mortensrud", start:[1900,620], end:[2460,910]},
+  {line:"4", from:"Brynseng", to:"Bergkrystallen", start:[1800,680], end:[2460,1060]}
+];
+const mapAnchors = {
+  "Majorstuen":[960,620],"Nationaltheatret":[1070,620],"Stortinget":[1180,620],
+  "Jernbanetorget":[1290,620],"Grønland":[1400,620],"Tøyen":[1510,620],
+  "Ensjø":[1620,620],"Helsfyr":[1730,620],"Brynseng":[1840,620],
+  "Hellerud":[1950,620],"Borgen":[850,620],"Smestad":[760,620],
+  "Frøen":[850,530],"Blindern":[880,450],"Forskningsparken":[950,370],
+  "Ullevål Stadion":[1050,310],"Nydalen":[1170,270],"Storo":[1290,240],
+  "Sinsen":[1410,230],"Løren":[1530,280],"Økern":[1650,330],
+  "Hasle":[1610,450],"Carl Berners Plass":[1530,510],
+  "Berg":[950,210],"Tåsen":[870,170],"Østhorn":[790,130],
+  "Holstein":[710,110],"Kringsjå":[630,95],"Sognsvann":[550,80],
+  "Vestli":[2460,90]
+};
+function mapRange(line, from, to, a, b) {
+  const stations = metroLines[line] || [];
+  const i = stations.indexOf(from), k = stations.indexOf(to);
+  if (i < 0 || k < 0) return;
+  const lo = Math.min(i,k), hi = Math.max(i,k);
+  for (let n=lo;n<=hi;n++) {
+    const t = (n-i)/(k-i || 1);
+    if (!mapStations.has(stations[n])) mapStations.set(stations[n],[a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])]);
   }
+}
+function buildMapPositions() {
+  mapStations.clear();
+  Object.entries(mapAnchors).forEach(([name,point])=>mapStations.set(name,point));
+  // Fyll ut de ulike grenene mellom kjente forgreningspunkter.
+  for (const b of mapBranches) {
+    const seq=metroLines[b.line] || [];
+    const a=seq.indexOf(b.from), z=seq.indexOf(b.to);
+    if(a<0||z<0)continue;
+    const points=[];
+    for(let i=Math.min(a,z);i<=Math.max(a,z);i++){
+      const name=seq[i];
+      if(mapAnchors[name])points.push({i,point:mapAnchors[name]});
+    }
+    if(!points.some(x=>x.i===a))points.push({i:a,point:b.start});
+    if(!points.some(x=>x.i===z))points.push({i:z,point:b.end});
+    points.sort((x,y)=>x.i-y.i);
+    for(let n=0;n<points.length-1;n++){
+      const u=points[n],v=points[n+1];
+      for(let i=u.i;i<=v.i;i++){
+        const t=(i-u.i)/(v.i-u.i||1);
+        if(!mapStations.has(seq[i]))mapStations.set(seq[i],[u.point[0]+t*(v.point[0]-u.point[0]),u.point[1]+t*(v.point[1]-u.point[1])]);
+      }
+    }
+  }
+  // Alle stasjoner i fellesstrekningen deler nøyaktig samme koordinat.
+  for(const line of Object.keys(metroLines)){
+    const seq=metroLines[line];
+    let previous=-1;
+    for(let i=0;i<seq.length;i++){
+      if(!mapStations.has(seq[i]))continue;
+      if(previous>=0 && i-previous>1){
+        const a=mapStations.get(seq[previous]),b=mapStations.get(seq[i]);
+        for(let n=previous+1;n<i;n++){
+          const t=(n-previous)/(i-previous);
+          if(!mapStations.has(seq[n]))mapStations.set(seq[n],[a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])]);
+        }
+      }
+      previous=i;
+    }
+  }
+}
+function svgElement(tag,attributes={}) {
+  const el=document.createElementNS(svgNS,tag);
+  Object.entries(attributes).forEach(([key,value])=>el.setAttribute(key,String(value)));
+  return el;
+}
+function stationCounts() {
+  const counts=new Map();
+  for(const line of Object.values(metroLines))for(const station of line)
+    if(!counts.has(station))counts.set(station,{from:0,to:0});
+  rides.forEach(ride=>{
+    if(counts.has(ride.startStation))counts.get(ride.startStation).from++;
+    if(counts.has(ride.endStation))counts.get(ride.endStation).to++;
+  });
+  return counts;
+}
+function showStationDetails(name,counts) {
+  selectedHeatmapStation=name;
+  const data=counts.get(name)||{from:0,to:0};
+  stationDetailsEl.replaceChildren();
+  const heading=document.createElement("h3");heading.textContent="🚉 "+name;
+  stationDetailsEl.appendChild(heading);
+  const grid=document.createElement("div");grid.className="station-stat-grid";
+  for(const [label,value] of [["Påstigninger",data.from],["Avstigninger",data.to],["Totalt",data.from+data.to]]){
+    const box=document.createElement("div");box.className="station-stat";
+    const strong=document.createElement("strong");strong.textContent=value;
+    const small=document.createElement("span");small.textContent=label;
+    box.append(strong,small);grid.appendChild(box);
+  }
+  stationDetailsEl.appendChild(grid);
+  metroMapObj.querySelectorAll(".map-station").forEach(el=>el.classList.toggle("selected",el.dataset.station===name));
+}
+function renderHeatmap() {
+  buildMapPositions();
+  const counts=stationCounts();
+  const maxCount=Math.max(1,...Array.from(counts.values(),x=>x.from+x.to));
+  const svg=svgElement("svg",{viewBox:"0 0 2570 1190",role:"img","aria-label":"Skjematisk kart over Oslo T-banenett med klikkbare stasjoner"});
+  const lineColors={"1":"#029cda","2":"#e95d11","3":"#a964a3","4":"#004896","5":"#39a935"};
+  for(const [line,seq] of Object.entries(metroLines)){
+    const points=seq.map(name=>mapStations.get(name)).filter(Boolean);
+    if(points.length<2)continue;
+    svg.appendChild(svgElement("polyline",{points:points.map(p=>p.join(",")).join(" "),fill:"none",stroke:lineColors[line],"stroke-width":9,"stroke-linecap":"round","stroke-linejoin":"round",opacity:0.8}));
+  }
+  const names=Array.from(mapStations.keys());
+  names.forEach((name,index)=>{
+    const [x,y]=mapStations.get(name),data=counts.get(name)||{from:0,to:0},total=data.from+data.to;
+    const group=svgElement("g",{class:"map-station",tabindex:"0",role:"button","aria-label":name+": "+data.from+" påstigninger, "+data.to+" avstigninger"});
+    group.dataset.station=name;
+    const hit=svgElement("circle",{cx:x,cy:y,r:22,fill:"transparent"});
+    const circle=svgElement("circle",{cx:x,cy:y,r:total?9+Math.min(7,Math.sqrt(total/maxCount)*7):7,fill:total?"#e95d11":"white",stroke:total?"#a34108":"#334155","stroke-width":total?2.5:2.5,opacity:total?0.35+0.65*Math.sqrt(total/maxCount):1});
+    const label=svgElement("text",{x:x+12,y:y+(index%2===0?-13:24),class:"map-station-label"});
+    label.textContent=name;
+    group.append(hit,circle,label);
+    const choose=()=>showStationDetails(name,counts);
+    group.addEventListener("click",choose);
+    group.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}});
+    svg.appendChild(group);
+  });
+  metroMapObj.replaceChildren(svg);
+  const visited=Array.from(counts.values()).filter(v=>v.from+v.to>0).length;
+  heatmapStatsEl.textContent=visited+" av "+counts.size+" stasjoner brukt som start eller slutt · "+rides.length+" registrerte turer";
+  if(selectedHeatmapStation&&counts.has(selectedHeatmapStation))showStationDetails(selectedHeatmapStation,counts);
 }
