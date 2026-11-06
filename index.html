@@ -130,11 +130,12 @@
 
 <h2>🗺️ Heatmap</h2>
 
-<div class="map-wrapper">
-  <object id="metroMap" data="metro-map.svg" type="image/svg+xml"></object>
+<p class="heatmap-help">Trykk på en stasjon for å se påstigninger og avstigninger. Dra kartet sidelengs for å utforske alle linjene.</p>
+<div class="map-wrapper" tabindex="0" aria-label="Interaktivt T-banekart, kan rulles sidelengs">
+  <div id="metroMap"></div>
 </div>
-
-<div id="heatmapStats"></div>
+<div id="heatmapStats" aria-live="polite"></div>
+<div id="stationDetails" class="station-details" aria-live="polite"><p>Velg en stasjon på kartet for å se statistikken.</p></div>
 
   </div>
 
