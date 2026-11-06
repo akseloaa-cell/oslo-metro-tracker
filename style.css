@@ -1046,3 +1046,18 @@ input:focus {
 #editRideModal {
   z-index: 1001;
 }
+
+/* Interaktivt, skjematisk T-banekart */
+.heatmap-help {color:var(--muted);font-size:14px;line-height:1.5}
+.map-wrapper {overflow:auto;overscroll-behavior-x:contain;touch-action:pan-x pan-y;max-height:70vh}
+#metroMap {width:100%;min-width:1150px;background:#f8fafc}
+#metroMap svg {display:block;width:100%;height:auto}
+.map-station {cursor:pointer;outline:none}
+.map-station-label {font:600 17px Arial,sans-serif;fill:#243348;paint-order:stroke;stroke:#f8fafc;stroke-width:4px;stroke-linejoin:round;pointer-events:none}
+.map-station:hover circle:nth-child(2),.map-station:focus-visible circle:nth-child(2),.map-station.selected circle:nth-child(2) {stroke:#101827;stroke-width:5}
+.station-details {padding:17px;background:var(--surface);border:1px solid var(--border);border-radius:16px}
+.station-details h3 {margin:0 0 12px}
+.station-stat-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.station-stat {display:flex;flex-direction:column;gap:5px;background:#f1f5f9;padding:13px 8px;border-radius:12px;text-align:center}
+.station-stat strong {font-size:24px;color:var(--ink)}
+.station-stat span {font-size:12px;color:var(--muted)}
