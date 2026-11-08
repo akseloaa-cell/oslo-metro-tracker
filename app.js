@@ -894,10 +894,27 @@ function renderHeatmap() {
   const maxCount=Math.max(1,...Array.from(counts.values(),x=>x.from+x.to));
   const svg=svgElement("svg",{viewBox:"0 0 2570 1190",role:"img","aria-label":"Skjematisk kart over Oslo T-banenett med klikkbare stasjoner"});
   const lineColors={"1":"#029cda","2":"#e95d11","3":"#a964a3","4":"#004896","5":"#39a935"};
+  // Separate parallel strokes on shared track sections, so every line remains visible.
+  const segmentLines=new Map();
   for(const [line,seq] of Object.entries(metroLines)){
-    const points=seq.map(name=>mapStations.get(name)).filter(Boolean);
-    if(points.length<2)continue;
-    svg.appendChild(svgElement("polyline",{points:points.map(p=>p.join(",")).join(" "),fill:"none",stroke:lineColors[line],"stroke-width":9,"stroke-linecap":"round","stroke-linejoin":"round",opacity:0.8}));
+    for(let i=1;i<seq.length;i++){
+      if(!mapStations.has(seq[i-1])||!mapStations.has(seq[i]))continue;
+      const key=[seq[i-1],seq[i]].sort().join("||");
+      if(!segmentLines.has(key))segmentLines.set(key,new Set());
+      segmentLines.get(key).add(line);
+    }
+  }
+  for(const [line,seq] of Object.entries(metroLines)){
+    for(let i=1;i<seq.length;i++){
+      const a=mapStations.get(seq[i-1]),b=mapStations.get(seq[i]);
+      if(!a||!b)continue;
+      const key=[seq[i-1],seq[i]].sort().join("||");
+      const parallel=[...segmentLines.get(key)].sort();
+      const offset=(parallel.indexOf(line)-(parallel.length-1)/2)*8;
+      const dx=b[0]-a[0],dy=b[1]-a[1],len=Math.hypot(dx,dy)||1;
+      const nx=-dy/len*offset,ny=dx/len*offset;
+      svg.appendChild(svgElement("line",{x1:a[0]+nx,y1:a[1]+ny,x2:b[0]+nx,y2:b[1]+ny,stroke:lineColors[line],"stroke-width":7,"stroke-linecap":"round",opacity:0.95}));
+    }
   }
   const names=Array.from(mapStations.keys());
   names.forEach((name,index)=>{
@@ -909,13 +926,56 @@ function renderHeatmap() {
     const label=svgElement("text",{x:x+12,y:y+(index%2===0?-13:24),class:"map-station-label"});
     label.textContent=name;
     group.append(hit,circle,label);
+    // Distinct coloured arcs around interchange stops identify all serving lines.
+    const serving=Object.entries(metroLines).filter(([,seq])=>seq.includes(name)).map(([line])=>line);
+    if(serving.length>1){
+      serving.forEach((line,i)=>{
+        const arc=svgElement("circle",{cx:x,cy:y,r:15,fill:"none",stroke:lineColors[line],"stroke-width":4,"stroke-dasharray":`${(2*Math.PI*15)/serving.length-2} ${2*Math.PI*15}`,"stroke-dashoffset":-(2*Math.PI*15*i/serving.length),transform:`rotate(-90 ${x} ${y})`});
+        arc.style.pointerEvents="none";group.appendChild(arc);
+      });
+    }
     const choose=()=>showStationDetails(name,counts);
     group.addEventListener("click",choose);
     group.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose();}});
     svg.appendChild(group);
   });
   metroMapObj.replaceChildren(svg);
+  enableMapDragging();
   const visited=Array.from(counts.values()).filter(v=>v.from+v.to>0).length;
   heatmapStatsEl.textContent=visited+" av "+counts.size+" stasjoner brukt som start eller slutt · "+rides.length+" registrerte turer";
   if(selectedHeatmapStation&&counts.has(selectedHeatmapStation))showStationDetails(selectedHeatmapStation,counts);
+}
+
+function enableMapDragging(){
+  const viewport=metroMapObj.closest(".map-wrapper");
+  if(!viewport || viewport.dataset.dragReady)return;
+  viewport.dataset.dragReady="true";
+  let drag=null;
+  viewport.addEventListener("pointerdown",e=>{
+    if(e.button!==0)return;
+    drag={id:e.pointerId,x:e.clientX,y:e.clientY,left:viewport.scrollLeft,top:viewport.scrollTop,moved:false};
+    viewport.setPointerCapture(e.pointerId);
+  });
+  viewport.addEventListener("pointermove",e=>{
+    if(!drag||drag.id!==e.pointerId)return;
+    const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+    if(Math.abs(dx)+Math.abs(dy)>6)drag.moved=true;
+    if(drag.moved){
+      viewport.scrollLeft=drag.left-dx;
+      viewport.scrollTop=drag.top-dy;
+      viewport.classList.add("dragging");
+    }
+  });
+  viewport.addEventListener("pointerup",e=>{
+    if(!drag||drag.id!==e.pointerId)return;
+    if(drag.moved){
+      viewport.dataset.suppressClick="true";
+      setTimeout(()=>{delete viewport.dataset.suppressClick;},0);
+    }
+    drag=null;viewport.classList.remove("dragging");
+  });
+  viewport.addEventListener("pointercancel",()=>{drag=null;viewport.classList.remove("dragging");});
+  viewport.addEventListener("click",e=>{
+    if(viewport.dataset.suppressClick){e.stopPropagation();e.preventDefault();}
+  },true);
 }
